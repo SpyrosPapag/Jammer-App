@@ -10,12 +10,6 @@ public class Login extends JFrame{
     private JButton loginButton;
     private JButton signUpButton;
 
-
-    /* For database connection */
-    private static final String JDBC_URL = Main.JDBC_URL;
-    private static final String DB_USER = Main.DB_USER;
-    private static final String DB_PASSWORD = Main.DB_PASSWORD;
-
     public static int user;
     public Login()
     {
@@ -33,7 +27,8 @@ public class Login extends JFrame{
                 char[] passwordChars = passwordPF.getPassword();
                 String password = new String(passwordChars);
 
-                user = credentialsCheck(username,password);
+                DBManager loginManager = new DBManager();
+                user = loginManager.credentialsCheck(username,password);
                 if(user > 0)
                 {
                     usernameTF.setText("");
@@ -64,29 +59,5 @@ public class Login extends JFrame{
                 new SignUp();
             }
         });
-    }
-
-    private int credentialsCheck(String username, String password) {
-        try
-        {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
-            {
-                String query = "SELECT user_id FROM user WHERE username = ? AND password = ?";
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query))
-                {
-                    preparedStatement.setString(1, username);
-                    preparedStatement.setString(2, password);
-                    try (ResultSet resultSet = preparedStatement.executeQuery())
-                    {
-                        if(resultSet.next()) // Returns true if the result set is not empty (valid credentials)
-                            return resultSet.getInt(1); // return user_id
-                    }
-                }
-            }
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-        return 0; // 0 for invalid
     }
 }

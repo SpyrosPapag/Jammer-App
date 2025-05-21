@@ -11,11 +11,6 @@ public class SignUp extends JFrame{
     private JPanel Wrapper;
     private JPasswordField confirmPF;
 
-    /* For database connection */
-    private static final String JDBC_URL = Main.JDBC_URL;
-    private static final String DB_USER = Main.DB_USER;
-    private static final String DB_PASSWORD = Main.DB_PASSWORD;
-
     public static int user;
     public SignUp()
     {
@@ -41,7 +36,8 @@ public class SignUp extends JFrame{
                 return;
             }
 
-            user = insertUser(username,password);
+            DBManager signUpManager = new DBManager();
+            user = signUpManager.insertUser(username,password);
             if(user > 0)
             {
                 usernameTF.setText("");
@@ -74,30 +70,5 @@ public class SignUp extends JFrame{
                 new Login();
             }
         });
-    }
-
-    private int insertUser(String username, String password) {
-        try
-        {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
-            {
-                String query = "INSERT INTO user(username, password, push_notifications, listing_notifications, event_notifications, chat_notifications) " +
-                               "VALUES(?, ?, 0,0,0,0)";
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
-                {
-                    preparedStatement.setString(1, username);
-                    preparedStatement.setString(2, password);
-                    preparedStatement.executeUpdate();
-                    try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                        if (resultSet.next())
-                            return resultSet.getInt(1);
-                    }
-                }
-            }
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-        return 0; // 0 for invalid
     }
 }

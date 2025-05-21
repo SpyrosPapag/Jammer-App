@@ -6,6 +6,7 @@ public class Main {
     public static final String DB_PASSWORD = "root";
 
     public static void main(String[] args) {
-        new Login();
+//        new Login();
+        new Events(1);
     }
 }
