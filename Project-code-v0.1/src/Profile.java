@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Profile extends JFrame{
     private JPanel newEdit_Panel;
@@ -93,7 +94,7 @@ public class Profile extends JFrame{
     {
         // fetch and display user`s info
         DBManager prflManager = new DBManager();
-        String info = prflManager.getProfileInfo(user);
+        ArrayList<Object> info = prflManager.getProfileInfo(user);
 
         displayUserInfo(profileInfoPanel, info);
 
@@ -103,7 +104,7 @@ public class Profile extends JFrame{
         Post.displayPosts(postsToDisplay, postsPanel);
     }
 
-    private void displayUserInfo(JPanel profileInfoPanel, String info)
+    private void displayUserInfo(JPanel profileInfoPanel, ArrayList<Object> info)
     {
         return;
     }

@@ -132,8 +132,32 @@ public class DBManager {
         return postResults;
     }
 
-    public String getProfileInfo(Integer user)
+    public ArrayList<Object> getProfileInfo(Integer user)
     {
-        return "";
+        ArrayList<Object> userInfoResults = new ArrayList<Object>();
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "SELECT avatar_url,bio,verified FROM user WHERE user_id = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query))
+                {
+                    preparedStatement.setInt(1, user);
+                    try (ResultSet resultSet = preparedStatement.executeQuery())
+                    {
+                        if(resultSet.next())
+                        {
+                            userInfoResults.add(resultSet.getString(1));
+                            userInfoResults.add(resultSet.getString(2));
+                            userInfoResults.add(resultSet.getBoolean(3));
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return userInfoResults;
     }
 }

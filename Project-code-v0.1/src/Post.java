@@ -82,7 +82,7 @@ public class Post {
             Integer id = post.getPost_id();
             for (String url : urls)
             {
-                String path = "/Media/" + id.toString() + "/" + url;
+                String path = "/Media/Posts/" + id.toString() + "/" + url;
                 URL imgUrl = Events.class.getResource(path);
                 ImageIcon icon = new ImageIcon(imgUrl);
                 Image img = icon.getImage().getScaledInstance(280, 200, Image.SCALE_SMOOTH);
