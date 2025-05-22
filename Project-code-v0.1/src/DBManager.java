@@ -135,6 +135,7 @@ public class DBManager {
     public ArrayList<Object> getProfileInfo(Integer user)
     {
         ArrayList<Object> userInfoResults = new ArrayList<Object>();
+        userInfoResults.add(user);
         try
         {
             Class.forName("com.mysql.cj.jdbc.Driver");

@@ -1,6 +1,8 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -17,6 +19,9 @@ public class Profile extends JFrame{
     private JScrollPane postsPanel;
     private JPanel Wrapper;
     private JPanel profileInfoPanel;
+    private JLabel Bio;
+    private JLabel Avatar;
+    private JLabel Other;
 
     public Profile(Integer user)
     {
@@ -27,16 +32,15 @@ public class Profile extends JFrame{
         setSize(375,740);
         setResizable(false);
         setLocationRelativeTo(null);
+        viewProfile(postsPanel, Bio, Avatar, Other, user);
 
-        viewProfile(postsPanel, profileInfoPanel, user);
-
-//        newPostButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new newPost();
-//            }
-//        });
+        newPostButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new newPost(user);
+            }
+        });
 //
 //        editProfileButton.addActionListener(new ActionListener() {
 //            @Override
@@ -88,15 +92,13 @@ public class Profile extends JFrame{
 
     }
 
-
-
-    private void viewProfile(JScrollPane postsPanel, JPanel profileInfoPanel, Integer user)
+    private void viewProfile(JScrollPane postsPanel, JLabel Bio, JLabel Avatar, JLabel Other, Integer user)
     {
         // fetch and display user`s info
         DBManager prflManager = new DBManager();
         ArrayList<Object> info = prflManager.getProfileInfo(user);
 
-        displayUserInfo(profileInfoPanel, info);
+        displayUserInfo(Bio, Avatar, Other, info);
 
         // fetch and display user`s posts
         ArrayList<Post> postsToDisplay = prflManager.getPosts(user);
@@ -104,8 +106,25 @@ public class Profile extends JFrame{
         Post.displayPosts(postsToDisplay, postsPanel);
     }
 
-    private void displayUserInfo(JPanel profileInfoPanel, ArrayList<Object> info)
+    private void displayUserInfo(JLabel Bio, JLabel Avatar, JLabel Other, ArrayList<Object> info)
     {
-        return;
+        // set avatar
+        String path = "/Media/UserAvatars/" + info.get(0).toString() + "/" + info.get(1).toString();
+        URL imgUrl = Events.class.getResource(path);
+        ImageIcon icon = new ImageIcon(imgUrl);
+        Image img = icon.getImage().getScaledInstance(100,100,Image.SCALE_SMOOTH);
+        Avatar.setIcon(new ImageIcon(img));
+
+        // set bio
+        Bio.setText(info.get(2).toString());
+
+        // set other
+        String text;
+        if((Boolean) info.get(3))
+            text = "Verified Gigachad";
+        else
+            text = "Unverified Bad player";
+        Other.setText(text);
+
     }
 }
