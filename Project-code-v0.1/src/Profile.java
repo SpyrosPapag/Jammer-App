@@ -3,49 +3,48 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class Events extends JFrame{
-    private JPanel Wrapper;
-    private JPanel filterSort_Panel;
+public class Profile extends JFrame{
+    private JPanel newEdit_Panel;
+    private JButton newPostButton;
+    private JButton editProfileButton;
     private JPanel pagesPanel;
-    private JButton filterButton;
-    private JButton sortByButton;
     private JButton listingsButton;
     private JButton chatButton;
     private JButton profileButton;
     private JButton notifsButton;
     private JButton eventsButton;
-    private JScrollPane feedPanel;
+    private JScrollPane postsPanel;
+    private JPanel Wrapper;
+    private JPanel profileInfoPanel;
 
-
-    public Events(Integer user)
+    public Profile(Integer user)
     {
         setContentPane(Wrapper);
-        setTitle("Events");
+        setTitle("Profile");
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(375,740);
         setResizable(false);
         setLocationRelativeTo(null);
 
-        // fetch and display users suggested events feed
-        viewFeed(feedPanel, user, "events");
+        viewProfile(postsPanel, profileInfoPanel, user);
 
-//        filterButton.addActionListener(new ActionListener() {
+//        newPostButton.addActionListener(new ActionListener() {
 //            @Override
 //            public void actionPerformed(ActionEvent e) {
 //                dispose();
-//                new Filter();
+//                new newPost();
 //            }
 //        });
 //
-//        sortByButton.addActionListener(new ActionListener() {
+//        editProfileButton.addActionListener(new ActionListener() {
 //            @Override
 //            public void actionPerformed(ActionEvent e) {
 //                dispose();
-//                new SortBy();
+//                new editProfile();
 //            }
 //        });
-//
+
 //        listingsButton.addActionListener(new ActionListener() {
 //            @Override
 //            public void actionPerformed(ActionEvent e) {
@@ -85,16 +84,27 @@ public class Events extends JFrame{
                 new Events(user);
             }
         });
+
     }
 
-    private void viewFeed(JScrollPane feedPanel, Integer user, String type)
-    {
-        // get user`s suggested posts
-        Suggested suggester = new Suggested();
-        ArrayList<Post> postsToDisplay = suggester.suggestPosts(user, type);
-        if(postsToDisplay.isEmpty()) return;
 
-        // display the returned posts
-        Post.displayPosts(postsToDisplay, feedPanel);
+
+    private void viewProfile(JScrollPane postsPanel, JPanel profileInfoPanel, Integer user)
+    {
+        // fetch and display user`s info
+        DBManager prflManager = new DBManager();
+        String info = prflManager.getProfileInfo(user);
+
+        displayUserInfo(profileInfoPanel, info);
+
+        // fetch and display user`s posts
+        ArrayList<Post> postsToDisplay = prflManager.getPosts(user);
+
+        Post.displayPosts(postsToDisplay, postsPanel);
+    }
+
+    private void displayUserInfo(JPanel profileInfoPanel, String info)
+    {
+        return;
     }
 }
