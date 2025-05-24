@@ -245,6 +245,7 @@ public class newPost extends JFrame{
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                for (File file : tmpImages) file.delete();
                 dispose();
                 new Profile(user);
             }
