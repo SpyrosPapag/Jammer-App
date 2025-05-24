@@ -161,4 +161,32 @@ public class DBManager {
         }
         return userInfoResults;
     }
+
+    public Integer addPost(Post post)
+    {
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "INSERT INTO post(poster_id, pictures_url_json, description) VALUES(?, ?, ?)";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                {
+                    preparedStatement.setInt(1, post.getPoster_id());
+                    preparedStatement.setString(2,post.getPictures_url_json());
+                    preparedStatement.setString(3, post.getDescription());
+
+                    preparedStatement.executeUpdate();
+                    try (ResultSet resultSet = preparedStatement.getGeneratedKeys())
+                    {
+                        if (resultSet.next())
+                            return resultSet.getInt(1);
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }
