@@ -2,8 +2,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +10,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,10 +31,17 @@ public class newPost extends JFrame{
     public JRadioButton venueRadio;
     public JRadioButton lessonRadio;
     public JRadioButton otherRadio;
+    private JPanel locationPanel;
+    private JPanel datePanel;
+    public JLabel dateLbl;
+    public JLabel locationLbl;
+    private JButton dateButton;
     private File[] chosenPhotos = null;
     private String tag = null;
     private String description = null;
     public Integer tmp_user = 0;
+    private String date;
+    private String location;
 
     public newPost(Integer user)
     {
@@ -72,6 +81,12 @@ public class newPost extends JFrame{
                 // description
                 description = descTF.getText();
 
+                // date
+                date = dateLbl.getText();
+
+                // location
+                location = locationLbl.getText();
+
                 // validate inputs
                 if(validateUserInputs(tag, description, chosenPhotos))
                 {
@@ -87,7 +102,7 @@ public class newPost extends JFrame{
                     }
 
                     // new Post object
-                    Post post = new Post(null, user, description, photo_urls.toString());
+                    Post post = new Post(null, user, description, photo_urls.toString(), tag, date, location, null);
 
                     // insert new Post to DB
                     DBManager newPostManager = new DBManager();
@@ -128,6 +143,7 @@ public class newPost extends JFrame{
                 else
                 {
                     // invalid inputs screen
+                    JOptionPane.showMessageDialog(null, "Invalid inputs", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -189,9 +205,41 @@ public class newPost extends JFrame{
                 picPanel.repaint();
             }
         });
+
+        datePanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                String input = JOptionPane.showInputDialog(null,"Enter a date (e.g. 2025-05-24):","Date Input",JOptionPane.QUESTION_MESSAGE);
+
+                if (input != null && !input.isEmpty())
+                {
+                    try
+                    {
+                        LocalDate date = LocalDate.parse(input);  // assumes ISO format yyyy-MM-dd
+                        dateLbl.setText(date.toString());
+                    }
+                    catch (DateTimeParseException ex)
+                    {
+                        JOptionPane.showMessageDialog(null, "Invalid date format!", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+
+        locationPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                String input = JOptionPane.showInputDialog(null,"Enter a location:","Location Input",JOptionPane.QUESTION_MESSAGE);
+
+                if (input != null && !input.isEmpty())
+                    locationLbl.setText(input);
+            }
+        });
     }
 
-    public newPost(Integer user, String tag_in, String description_in, List<BufferedImage> pics_in, List<String> names_in)
+    public newPost(Integer user, String tag_in, String description_in, List<BufferedImage> pics_in, List<String> names_in, String date_in, String location_in)
     {
         tmp_user = user;
         setContentPane(Wrapper);
@@ -209,6 +257,8 @@ public class newPost extends JFrame{
         else if (Objects.equals(tag_in, "other")) otherRadio.setSelected(true);
 
         descTF.setText(description_in);
+        dateLbl.setText(date_in);
+        locationLbl.setText(location_in);
 
         File[] tmpImages = new File[pics_in.size()];
         for (int i = 0; i < pics_in.size(); i++)
@@ -264,6 +314,12 @@ public class newPost extends JFrame{
                 // description
                 description = descTF.getText();
 
+                // date
+                date = dateLbl.getText();
+
+                // location
+                location = locationLbl.getText();
+
                 // validate inputs
                 if(validateUserInputs(tag, description, chosenPhotos))
                 {
@@ -279,7 +335,7 @@ public class newPost extends JFrame{
                     }
 
                     // new Post object
-                    Post post = new Post(null, user, description, photo_urls.toString());
+                    Post post = new Post(null, user, description, photo_urls.toString(), tag, date, location, null);
 
                     // insert new Post to DB
                     DBManager newPostManager = new DBManager();
@@ -321,6 +377,7 @@ public class newPost extends JFrame{
                 else
                 {
                     // invalid inputs screen
+                    JOptionPane.showMessageDialog(null, "Invalid inputs", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -380,6 +437,38 @@ public class newPost extends JFrame{
                 picPanel.add(Post.displayMultiplePhotos(pics, names, this), BorderLayout.CENTER);
                 picPanel.revalidate();
                 picPanel.repaint();
+            }
+        });
+
+        datePanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                String input = JOptionPane.showInputDialog(null,"Enter a date (e.g. 2025-05-24):","Date Input",JOptionPane.QUESTION_MESSAGE);
+
+                if (input != null && !input.isEmpty())
+                {
+                    try
+                    {
+                        LocalDate date = LocalDate.parse(input);  // assumes ISO format yyyy-MM-dd
+                        dateLbl.setText(date.toString());
+                    }
+                    catch (DateTimeParseException ex)
+                    {
+                        JOptionPane.showMessageDialog(null, "Invalid date format!", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+
+        locationPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                String input = JOptionPane.showInputDialog(null,"Enter a location:","Location Input",JOptionPane.QUESTION_MESSAGE);
+
+                if (input != null && !input.isEmpty())
+                    locationLbl.setText(input);
             }
         });
     }

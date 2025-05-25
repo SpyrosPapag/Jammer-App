@@ -7,9 +7,40 @@ import java.util.*;
 import java.util.List;
 
 public class Post {
+    private Integer post_id, poster_id, popularity;
+    private String description, type, location, date;
 
-    private Integer post_id, poster_id;
-    private String description;
+    public Integer getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(Integer popularity) {
+        this.popularity = popularity;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public String getPictures_url_json() {
         return pictures_url_json;
@@ -45,12 +76,16 @@ public class Post {
         this.pictures_url_json = pictures_url_json;
     }
 
-    public Post(Integer post_id, Integer poster_id, String description, String pictures_url_json)
+    public Post(Integer post_id, Integer poster_id, String description, String pictures_url_json, String type, String date, String location, Integer popularity)
     {
         setPost_id(post_id);
         setPoster_id(poster_id);
         setDescription(description);
         setPictures_url_json(pictures_url_json);
+        setType(type);
+        setDate(date);
+        setLocation(location);
+        setPopularity(popularity);
     }
 
     public static void displayPosts(ArrayList<Post> postsToDisplay, JScrollPane displayPanel)
@@ -65,13 +100,13 @@ public class Post {
             JPanel postPanel = new JPanel(new BorderLayout(0, 40));
             postPanel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
             postPanel.setBackground(Color.lightGray);
-            Dimension dims = new Dimension(357, 300);
+            Dimension dims = new Dimension(357, 360);
             postPanel.setPreferredSize(dims);
             postPanel.setMinimumSize(dims);
-            postPanel.setMaximumSize(dims);
+            postPanel.setMaximumSize(new Dimension(357, 400));
 
             // text section
-            JLabel textLabel = new JLabel(post.getDescription());
+            JLabel textLabel = new JLabel("<html> description: " + post.getDescription() + "<br> date: " + post.getDate() + "<br> popularity: " + post.getPopularity() + "<br> location: " + post.getLocation() + "</html>");
             textLabel.setHorizontalAlignment(SwingConstants.CENTER);
             postPanel.add(textLabel, BorderLayout.SOUTH);
 

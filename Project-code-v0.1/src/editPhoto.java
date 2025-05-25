@@ -102,7 +102,7 @@ public class editPhoto extends JFrame{
                 else if(info.lessonRadio.isSelected()) tag = "lesson";
                 else if(info.otherRadio.isSelected())  tag = "other";
 
-                new newPost(info.tmp_user, tag, info.descTF.getText(), pics, names);
+                new newPost(info.tmp_user, tag, info.descTF.getText(), pics, names, info.dateLbl.getText(), info.locationLbl.getText());
             }
         });
 
@@ -117,7 +117,7 @@ public class editPhoto extends JFrame{
                 else if(info.otherRadio.isSelected())  tag = "other";
 
                 pics.set(index, filtered);
-                new newPost(info.tmp_user, tag, info.descTF.getText(), pics, names);
+                new newPost(info.tmp_user, tag, info.descTF.getText(), pics, names, info.dateLbl.getText(), info.locationLbl.getText());
             }
         });
     }

@@ -1,5 +1,6 @@
 import java.sql.*;
 import java.util.*;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 public class DBManager {
@@ -77,16 +78,19 @@ public class DBManager {
 
                     try (ResultSet resultSet = preparedStatement.executeQuery())
                     {
-                        Integer post_id, poster_id;
-                        String description;
-                        String pictures_url_json;
+                        Integer post_id, poster_id, popularity;
+                        String description, pictures_url_json, type, location, date;
                         while(resultSet.next())
                         {
                             post_id = resultSet.getInt(1);
                             poster_id = resultSet.getInt(2);
                             pictures_url_json = resultSet.getString(3);
                             description = resultSet.getString(4);
-                            postResults.add(new Post(post_id, poster_id, description, pictures_url_json));
+                            type = resultSet.getString(5);
+                            date = resultSet.getString(6);
+                            location = resultSet.getString(7);
+                            popularity = resultSet.getInt(8);
+                            postResults.add(new Post(post_id, poster_id, description, pictures_url_json, type, date, location, popularity));
                         }
                     }
                 }
@@ -112,16 +116,19 @@ public class DBManager {
 
                     try (ResultSet resultSet = preparedStatement.executeQuery())
                     {
-                        Integer post_id, poster_id;
-                        String description;
-                        String pictures_url_json;
+                        Integer post_id, poster_id, popularity;
+                        String description, pictures_url_json, type, location, date;
                         while(resultSet.next())
                         {
                             post_id = resultSet.getInt(1);
                             poster_id = resultSet.getInt(2);
                             pictures_url_json = resultSet.getString(3);
                             description = resultSet.getString(4);
-                            postResults.add(new Post(post_id, poster_id, description, pictures_url_json));
+                            type = resultSet.getString(5);
+                            date = resultSet.getString(6);
+                            location = resultSet.getString(7);
+                            popularity = resultSet.getInt(8);
+                            postResults.add(new Post(post_id, poster_id, description, pictures_url_json, type, date, location, popularity));
                         }
                     }
                 }
@@ -169,12 +176,15 @@ public class DBManager {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
             {
-                String query = "INSERT INTO post(poster_id, pictures_url_json, description) VALUES(?, ?, ?)";
+                String query = "INSERT INTO post(poster_id, pictures_url_json, description, type, date, location) VALUES(?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
                 {
                     preparedStatement.setInt(1, post.getPoster_id());
                     preparedStatement.setString(2,post.getPictures_url_json());
                     preparedStatement.setString(3, post.getDescription());
+                    preparedStatement.setString(4, post.getType());
+                    preparedStatement.setString(5, post.getDate());
+                    preparedStatement.setString(6, post.getLocation());
 
                     preparedStatement.executeUpdate();
                     try (ResultSet resultSet = preparedStatement.getGeneratedKeys())
