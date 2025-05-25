@@ -9,6 +9,7 @@ public class DBManager {
     private static final String JDBC_URL = Main.JDBC_URL;
     private static final String DB_USER = Main.DB_USER;
     private static final String DB_PASSWORD = Main.DB_PASSWORD;
+    private static final int    SUGGESTED_AMOUNT = 100;
 
     public Integer credentialsCheck(String username, String password)
     {
@@ -129,6 +130,48 @@ public class DBManager {
                             location = resultSet.getString(7);
                             popularity = resultSet.getInt(8);
                             postResults.add(new Post(post_id, poster_id, description, pictures_url_json, type, date, location, popularity));
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return postResults;
+    }
+
+    public ArrayList<Post> getPosts(Integer user, String type)
+    {
+        ArrayList<Post> postResults = new ArrayList<>();
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query;
+                if(type.equals("event"))
+                    query = "SELECT * FROM post WHERE post.type = 'event' ORDER BY post.date DESC LIMIT ?";
+                else
+                    query = "SELECT * FROM post WHERE post.type = 'venue' OR post.type = 'lesson' ORDER BY post.date DESC LIMIT ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query))
+                {
+                    preparedStatement.setInt(1, SUGGESTED_AMOUNT);
+
+                    try (ResultSet resultSet = preparedStatement.executeQuery())
+                    {
+                        Integer post_id, poster_id, popularity;
+                        String description, pictures_url_json, post_type, location, date;
+                        while(resultSet.next())
+                        {
+                            post_id = resultSet.getInt(1);
+                            poster_id = resultSet.getInt(2);
+                            pictures_url_json = resultSet.getString(3);
+                            description = resultSet.getString(4);
+                            post_type = resultSet.getString(5);
+                            date = resultSet.getString(6);
+                            location = resultSet.getString(7);
+                            popularity = resultSet.getInt(8);
+                            postResults.add(new Post(post_id, poster_id, description, pictures_url_json, post_type, date, location, popularity));
                         }
                     }
                 }
