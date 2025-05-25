@@ -15,7 +15,7 @@ public class Events extends JFrame{
     private JButton notifsButton;
     private JButton eventsButton;
     private JScrollPane feedPanel;
-
+    private ArrayList<Post> postsToDisplay;
 
     public Events(Integer user)
     {
@@ -30,21 +30,18 @@ public class Events extends JFrame{
         // fetch and display users suggested events feed
         viewFeed(feedPanel, user, "events");
 
-//        filterButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new Filter();
-//            }
-//        });
-//
-//        sortByButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new SortBy();
-//            }
-//        });
+        filterButton.addActionListener(e -> {
+            new Filter(postsToDisplay, filtered -> {
+                refreshFeed(filtered);
+            });
+        });
+
+        sortByButton.addActionListener(e -> {
+            new SortBy(postsToDisplay, sorted -> {
+                refreshFeed(sorted);
+            });
+        });
+
 //
 //        listingsButton.addActionListener(new ActionListener() {
 //            @Override
@@ -91,10 +88,16 @@ public class Events extends JFrame{
     {
         // get user`s suggested posts
         Suggested suggester = new Suggested();
-        ArrayList<Post> postsToDisplay = suggester.suggestPosts(user, type);
+        postsToDisplay = suggester.suggestPosts(user, type);
         if(postsToDisplay.isEmpty()) return;
 
         // display the returned posts
         Post.displayPosts(postsToDisplay, feedPanel);
     }
+
+    public void refreshFeed(ArrayList<Post> newPosts) {
+        this.postsToDisplay = newPosts;
+        Post.displayPosts(postsToDisplay, feedPanel);
+    }
+
 }
