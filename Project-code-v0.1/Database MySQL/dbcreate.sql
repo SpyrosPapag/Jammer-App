@@ -32,6 +32,10 @@ CREATE TABLE post(
     poster_id BIGINT,
     pictures_url_json TEXT,
     description TEXT NOT NULL,
+    type ENUM('event','venue','lesson', 'other') NOT NULL,
+    date DATE DEFAULT (CURRENT_DATE),
+    location TEXT,
+    popularity BIGINT DEFAULT 0,
     PRIMARY KEY(post_id),
     CONSTRAINT post_user_key FOREIGN KEY(poster_id)
     REFERENCES user(user_id) ON UPDATE CASCADE ON DELETE SET NULL

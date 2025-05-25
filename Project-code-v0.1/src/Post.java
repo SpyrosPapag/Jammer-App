@@ -1,17 +1,49 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.*;
 import java.util.List;
 
 public class Post {
+    private Integer post_id, poster_id, popularity;
+    private String description, type, location, date;
 
-    private Integer post_id, poster_id;
-    private String description;
+    public Integer getPopularity() {
+        return popularity;
+    }
 
-    public List<String> getPictures_url_json() {
-        return Arrays.asList(pictures_url_json.split(","));
+    public void setPopularity(Integer popularity) {
+        this.popularity = popularity;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getPictures_url_json() {
+        return pictures_url_json;
     }
 
     public String getDescription() {
@@ -44,12 +76,16 @@ public class Post {
         this.pictures_url_json = pictures_url_json;
     }
 
-    public Post(Integer post_id, Integer poster_id, String description, String pictures_url_json)
+    public Post(Integer post_id, Integer poster_id, String description, String pictures_url_json, String type, String date, String location, Integer popularity)
     {
         setPost_id(post_id);
         setPoster_id(poster_id);
         setDescription(description);
         setPictures_url_json(pictures_url_json);
+        setType(type);
+        setDate(date);
+        setLocation(location);
+        setPopularity(popularity);
     }
 
     public static void displayPosts(ArrayList<Post> postsToDisplay, JScrollPane displayPanel)
@@ -64,55 +100,18 @@ public class Post {
             JPanel postPanel = new JPanel(new BorderLayout(0, 40));
             postPanel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
             postPanel.setBackground(Color.lightGray);
-            Dimension dims = new Dimension(357, 250);
+            Dimension dims = new Dimension(357, 360);
             postPanel.setPreferredSize(dims);
             postPanel.setMinimumSize(dims);
-            postPanel.setMaximumSize(dims);
+            postPanel.setMaximumSize(new Dimension(357, 400));
 
             // text section
-            JLabel textLabel = new JLabel(post.getDescription());
+            JLabel textLabel = new JLabel("<html> description: " + post.getDescription() + "<br> date: " + post.getDate() + "<br> popularity: " + post.getPopularity() + "<br> location: " + post.getLocation() + "</html>");
             textLabel.setHorizontalAlignment(SwingConstants.CENTER);
             postPanel.add(textLabel, BorderLayout.SOUTH);
 
             // photos section
-            List<String> urls = post.getPictures_url_json();
-            JPanel cardPanel = new JPanel(new CardLayout());
-            cardPanel.setPreferredSize(new Dimension(360, 250));
-            cardPanel.setBackground(Color.lightGray);
-            Integer id = post.getPost_id();
-            for (String url : urls)
-            {
-                String path = "/Media/Posts/" + id.toString() + "/" + url;
-                URL imgUrl = Events.class.getResource(path);
-                ImageIcon icon = new ImageIcon(imgUrl);
-                Image img = icon.getImage().getScaledInstance(280, 200, Image.SCALE_SMOOTH);
-                JLabel picLabel = new JLabel(new ImageIcon(img));
-                JPanel wrapper = new JPanel(new BorderLayout());
-                wrapper.setBackground(Color.lightGray);
-                wrapper.add(picLabel, BorderLayout.CENTER);
-                cardPanel.add(wrapper, url);
-            }
-            // navigation buttons
-            JButton prevBtn = new JButton("p");
-            JButton nextBtn = new JButton("n");
-            prevBtn.setPreferredSize(new Dimension(42, 250));
-            nextBtn.setPreferredSize(new Dimension(42, 250));
-
-            // listeners
-            CardLayout cl = (CardLayout) cardPanel.getLayout();
-            prevBtn.addActionListener(e -> cl.previous(cardPanel));
-            nextBtn.addActionListener(e -> cl.next(cardPanel));
-
-            // assemble
-            JPanel carouselContainer = new JPanel(new BorderLayout());
-            carouselContainer.setBackground(Color.LIGHT_GRAY);
-            if(urls.size() > 1)
-            {
-                carouselContainer.add(prevBtn, BorderLayout.WEST);
-                carouselContainer.add(nextBtn, BorderLayout.EAST);
-            }
-            carouselContainer.add(cardPanel, BorderLayout.CENTER);
-            postPanel.add(carouselContainer, BorderLayout.CENTER);
+            postPanel.add(displayMultiplePhotos(post), BorderLayout.CENTER);
 
             container.add(postPanel);
             container.add(Box.createVerticalStrut(5));
@@ -124,5 +123,93 @@ public class Post {
         // refresh
         container.revalidate();
         container.repaint();
+    }
+
+    public static JPanel displayMultiplePhotos(Post post)
+    {
+        JPanel cardPanel = new JPanel(new CardLayout());
+        cardPanel.setPreferredSize(new Dimension(360, 280));
+        cardPanel.setBackground(Color.lightGray);
+        Integer id = post.getPost_id();
+        List<String> urls = Arrays.asList(post.getPictures_url_json().split(","));
+        for (String url : urls)
+        {
+            String path = "/Media/Posts/" + id.toString() + "/" + url;
+            URL imgUrl = Events.class.getResource(path);
+            ImageIcon icon = new ImageIcon(imgUrl);
+            Image img = icon.getImage().getScaledInstance(280, 280, Image.SCALE_SMOOTH);
+            JLabel picLabel = new JLabel(new ImageIcon(img));
+            JPanel wrapper = new JPanel(new BorderLayout());
+            wrapper.setBackground(Color.lightGray);
+            wrapper.add(picLabel, BorderLayout.CENTER);
+            cardPanel.add(wrapper, url);
+        }
+        // navigation buttons
+        JButton prevBtn = new JButton("<");
+        JButton nextBtn = new JButton(">");
+        prevBtn.setPreferredSize(new Dimension(42, 280));
+        nextBtn.setPreferredSize(new Dimension(42, 280));
+
+        // listeners
+        CardLayout cl = (CardLayout) cardPanel.getLayout();
+        prevBtn.addActionListener(e -> cl.previous(cardPanel));
+        nextBtn.addActionListener(e -> cl.next(cardPanel));
+
+        // assemble
+        JPanel carouselContainer = new JPanel(new BorderLayout());
+        carouselContainer.setBackground(Color.LIGHT_GRAY);
+        if(urls.size() > 1)
+        {
+            carouselContainer.add(prevBtn, BorderLayout.WEST);
+            carouselContainer.add(nextBtn, BorderLayout.EAST);
+        }
+        carouselContainer.add(cardPanel, BorderLayout.CENTER);
+        return carouselContainer;
+    }
+
+    public static JPanel displayMultiplePhotos(List<BufferedImage> pics, List<String> names, newPost info)
+    {
+        JPanel cardPanel = new JPanel(new CardLayout());
+        cardPanel.setPreferredSize(new Dimension(360, 280));
+        cardPanel.setBackground(Color.lightGray);
+        int count = 0;
+        for (BufferedImage pic : pics)
+        {
+            JLabel picLabel = new JLabel(new ImageIcon(pic));
+            JPanel wrapper = new JPanel(new BorderLayout());
+            wrapper.add(picLabel, BorderLayout.CENTER);
+
+            JButton editBtn = new JButton("Edit");
+            int finalCount = count;
+            editBtn.addActionListener(e -> {
+                info.dispose();
+                new editPhoto(pics, names, finalCount, info);
+            });
+            wrapper.add(editBtn, BorderLayout.NORTH);
+
+            cardPanel.add(wrapper, names.get(count));
+            count++;
+        }
+        // navigation buttons
+        JButton prevBtn = new JButton("<");
+        JButton nextBtn = new JButton(">");
+        prevBtn.setPreferredSize(new Dimension(42, 280));
+        nextBtn.setPreferredSize(new Dimension(42, 280));
+
+        // listeners
+        CardLayout cl = (CardLayout) cardPanel.getLayout();
+        prevBtn.addActionListener(e -> cl.previous(cardPanel));
+        nextBtn.addActionListener(e -> cl.next(cardPanel));
+
+        // assemble
+        JPanel carouselContainer = new JPanel(new BorderLayout());
+        carouselContainer.setBackground(Color.LIGHT_GRAY);
+        if(pics.size() > 1)
+        {
+            carouselContainer.add(prevBtn, BorderLayout.WEST);
+            carouselContainer.add(nextBtn, BorderLayout.EAST);
+        }
+        carouselContainer.add(cardPanel, BorderLayout.CENTER);
+        return carouselContainer;
     }
 }
