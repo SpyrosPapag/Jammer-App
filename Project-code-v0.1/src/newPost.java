@@ -88,7 +88,7 @@ public class newPost extends JFrame{
                 location = locationLbl.getText();
 
                 // validate inputs
-                if(validateUserInputs(tag, description, chosenPhotos))
+                if(validateUserInputs(tag, description, chosenPhotos, date, location))
                 {
                     // photos
                     StringBuilder photo_urls = new StringBuilder();
@@ -321,7 +321,7 @@ public class newPost extends JFrame{
                 location = locationLbl.getText();
 
                 // validate inputs
-                if(validateUserInputs(tag, description, chosenPhotos))
+                if(validateUserInputs(tag, description, chosenPhotos, date, location))
                 {
                     // photos
                     StringBuilder photo_urls = new StringBuilder();
@@ -473,11 +473,8 @@ public class newPost extends JFrame{
         });
     }
 
-    private boolean validateUserInputs(String tag, String description, File[] file)
+    private boolean validateUserInputs(String tag, String description, File[] file, String date, String location)
     {
-        if(tag == null || Objects.equals(description, "") || file == null)
-            return false;
-        else
-            return true;
+        return tag != null && !Objects.equals(description, "") && file != null && !Objects.equals(date, "") && !Objects.equals(location, "");
     }
 }
