@@ -249,7 +249,7 @@ public class DBManager {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
             {
-                String query = "SELECT interested_user_id FROM interested WHERE user_id = ?";
+                String query = "SELECT interested_user_id FROM interested WHERE interested_user_id = ?";
                 try (PreparedStatement preparedStatement = connection.prepareStatement(query))
                 {
                     preparedStatement.setInt(1, user);
@@ -282,19 +282,16 @@ public class DBManager {
                     preparedStatement.setInt(1, user);
                     preparedStatement.setInt(2, post.getPost_id());
 
-                    preparedStatement.executeUpdate();
-                    try (ResultSet resultSet = preparedStatement.getGeneratedKeys())
-                    {
-                        if (resultSet.next()) {
-                            query = "INSERT INTO chat_request(sender_id, recipient_id, source_id) VALUES(?, ?, ?)";
-                            try(PreparedStatement insertStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
-                            {
-                                insertStatement.setInt(1, user);
-                                insertStatement.setInt(2, post.getPoster_id());
-                                insertStatement.setInt(3, post.getPost_id());
+                    int affected_rows = preparedStatement.executeUpdate();
+                    if (affected_rows > 0) {
+                        query = "INSERT INTO chat_request(sender_id, recipient_id, source_id) VALUES(?, ?, ?)";
+                        try(PreparedStatement insertStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                        {
+                            insertStatement.setInt(1, user);
+                            insertStatement.setInt(2, post.getPoster_id());
+                            insertStatement.setInt(3, post.getPost_id());
 
-                                insertStatement.executeUpdate();
-                            }
+                            insertStatement.executeUpdate();
                         }
                     }
                 }

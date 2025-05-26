@@ -6,10 +6,9 @@ public class Main {
     public static final String DB_PASSWORD = "root";
     public static int loggeduser = 1;
 
+    static Post mypost = new Post(1, 1, "Hallo", "photos_temp_tennis.png", "event",
+            "2025-05-26", "Here", 10);
     public static void main(String[] args) {
-        new PostScreen(
-                new Post(1, 1, "Hallo", "photos_temp_tennis.png", "event",
-                        "Today", "Here", 10)
-        );
+        new PostScreen(mypost);
     }
 }

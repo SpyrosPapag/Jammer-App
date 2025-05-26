@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -42,13 +44,13 @@ public class PostScreen extends JFrame {
             }
         });
 
-//        listingsButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new Listings();
-//            }
-//        });
+        listingsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new Listings(Main.loggeduser);
+            }
+        });
 //
 //        notifsButton.addActionListener(new ActionListener() {
 //            @Override
@@ -107,20 +109,19 @@ public class PostScreen extends JFrame {
         container.add(postPanel);
         container.add(Box.createVerticalStrut(5));
 
-        JPanel avatarPanel = new JPanel(new BorderLayout(0, 40));
-        avatarPanel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
-        avatarPanel.setBackground(Color.lightGray);
-        avatarPanel.setPreferredSize(dims);
-        avatarPanel.setMinimumSize(dims);
-        avatarPanel.setMaximumSize(new Dimension(357, 400));
-
         ArrayList<Object> info = postScrnManager.getProfileInfo(post.getPoster_id());
         String path = "/Media/UserAvatars/" + info.get(0).toString() + "/" + info.get(1).toString();
         URL imgUrl = Events.class.getResource(path);
         ImageIcon icon = new ImageIcon(imgUrl);
         Image img = icon.getImage().getScaledInstance(100,100,Image.SCALE_SMOOTH);
         Avatar.setIcon(new ImageIcon(img));
-
+        Avatar.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e){
+                dispose();
+                new Profile(post.getPoster_id());
+            }
+        });
 
         // add container to scroll pane
         infoPanel.setViewportView(container);
