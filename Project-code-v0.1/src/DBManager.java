@@ -242,4 +242,65 @@ public class DBManager {
         }
         return 0;
     }
+
+    public Boolean isInterested(Integer user){
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "SELECT interested_user_id FROM interested WHERE user_id = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query))
+                {
+                    preparedStatement.setInt(1, user);
+                    try (ResultSet resultSet = preparedStatement.executeQuery())
+                    {
+                        if(resultSet.isBeforeFirst())
+                        {
+                            return false;
+                        }
+                        else
+                            return true;
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void expressInterest(Integer user, Post post) {
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "INSERT INTO interested VALUES(?, ?)";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                {
+                    preparedStatement.setInt(1, user);
+                    preparedStatement.setInt(2, post.getPost_id());
+
+                    preparedStatement.executeUpdate();
+                    try (ResultSet resultSet = preparedStatement.getGeneratedKeys())
+                    {
+                        if (resultSet.next()) {
+                            query = "INSERT INTO chat_request(sender_id, recipient_id, source_id) VALUES(?, ?, ?)";
+                            try(PreparedStatement insertStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                            {
+                                insertStatement.setInt(1, user);
+                                insertStatement.setInt(2, post.getPoster_id());
+                                insertStatement.setInt(3, post.getPost_id());
+
+                                insertStatement.executeUpdate();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

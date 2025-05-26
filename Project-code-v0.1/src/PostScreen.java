@@ -1,7 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URL;
+import java.util.ArrayList;
 
-public class PostScreen {
+public class PostScreen extends JFrame {
     private JPanel Wrapper;
     private JPanel pagesPanel;
     private JButton listingsButton;
@@ -11,9 +15,74 @@ public class PostScreen {
     private JButton eventsButton;
     private JScrollPane infoPanel;
     private JButton interestedButton;
+    private JLabel Avatar;
 
     public PostScreen(Post post) {
-        // panel for all posts
+
+        setContentPane(Wrapper);
+        setTitle(post.getType().substring(0, 1).toUpperCase() + post.getType().substring(1));
+        setVisible(true);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(375,740);
+        setResizable(false);
+        setLocationRelativeTo(null);
+
+        DBManager postScrnManager = new DBManager();
+        if(postScrnManager.isInterested(Main.loggeduser)){
+            interestedButton.setEnabled(true);
+        }
+        else
+            interestedButton.setEnabled(false);
+
+        interestedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                interestedButton.setEnabled(false);
+                postScrnManager.expressInterest(Main.loggeduser, post);
+            }
+        });
+
+//        listingsButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                dispose();
+//                new Listings();
+//            }
+//        });
+//
+//        notifsButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                dispose();
+//                new NotificationsScreen();
+//            }
+//        });
+//
+//        chatButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                dispose();
+//                new ChatScreen();
+//            }
+//        });
+
+        profileButton.addActionListener(new ActionListener() {
+                                                 @Override
+                                                 public void actionPerformed(ActionEvent e) {
+                                                     dispose();
+                                                     new Profile(Main.loggeduser);
+                                                 }
+                                             });
+
+        eventsButton.addActionListener(new ActionListener() {
+                                                 @Override
+                                                 public void actionPerformed(ActionEvent e) {
+                                                     dispose();
+                                                     new Events(Main.loggeduser);
+                                                 }
+                                             });
+
+        // panel for post info
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 
@@ -44,6 +113,13 @@ public class PostScreen {
         avatarPanel.setPreferredSize(dims);
         avatarPanel.setMinimumSize(dims);
         avatarPanel.setMaximumSize(new Dimension(357, 400));
+
+        ArrayList<Object> info = postScrnManager.getProfileInfo(post.getPoster_id());
+        String path = "/Media/UserAvatars/" + info.get(0).toString() + "/" + info.get(1).toString();
+        URL imgUrl = Events.class.getResource(path);
+        ImageIcon icon = new ImageIcon(imgUrl);
+        Image img = icon.getImage().getScaledInstance(100,100,Image.SCALE_SMOOTH);
+        Avatar.setIcon(new ImageIcon(img));
 
 
         // add container to scroll pane
