@@ -31,7 +31,7 @@ public class Events extends JFrame{
         viewFeed(feedPanel, user, "events");
 
         filterButton.addActionListener(e -> {
-            new Filter(postsToDisplay, filtered -> {
+            new Filter("events", postsToDisplay, filtered -> {
                 if(filtered.isEmpty())
                     JOptionPane.showMessageDialog(null, "No results for filter.", "No results", JOptionPane.INFORMATION_MESSAGE);
                 else
