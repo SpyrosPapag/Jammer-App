@@ -30,14 +30,14 @@ public class Events extends JFrame{
         // fetch and display users suggested events feed
         viewFeed(feedPanel, user, "events");
 
-        filterButton.addActionListener(e -> {
+        /*filterButton.addActionListener(e -> {
             new Filter(postsToDisplay, filtered -> {
-                if(filtered.isEmpty())
+                if(!filtered.isEmpty())
                     JOptionPane.showMessageDialog(null, "No results for filter.", "No results", JOptionPane.INFORMATION_MESSAGE);
                 else
                     refreshFeed(filtered);
             });
-        });
+        });*/
 
         sortByButton.addActionListener(e -> {
             if(postsToDisplay.isEmpty())
@@ -65,13 +65,13 @@ public class Events extends JFrame{
 //            }
 //        });
 //
-//        chatButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new ChatScreen();
-//            }
-//        });
+        chatButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new Chats(user);
+            }
+        });
 
         profileButton.addActionListener(new ActionListener() {
             @Override

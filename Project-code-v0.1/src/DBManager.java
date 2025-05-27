@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
@@ -199,4 +200,123 @@ public class DBManager {
         }
         return 0;
     }
+
+    public String getUsernameById(int userId) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                String query = "SELECT username FROM user WHERE user_id = ?";
+                try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                    stmt.setInt(1, userId);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next()) {
+                            return rs.getString("username");
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public ArrayList<String[]> getChatsForUser(int userId) {
+        ArrayList<String[]> chatList = new ArrayList<>();
+        String query = "SELECT chat_id, member1, member2 FROM chat WHERE member1 = ? OR member2 = ?";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                    stmt.setInt(1, userId);
+                    stmt.setInt(2, userId);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        while (rs.next()) {
+                            int chatId = rs.getInt("chat_id");
+                            int member1 = rs.getInt("member1");
+                            int member2 = rs.getInt("member2");
+                            int otherId = (member1 == userId) ? member2 : member1;
+                            String otherUsername = getUsernameById(otherId);
+                            chatList.add(new String[]{String.valueOf(chatId), otherUsername});
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+
+        return chatList;
+    }
+
+    public int getOtherUserId(int chatId, int currentUserId) {
+        String query = "SELECT member1, member2 FROM chat WHERE chat_id = ?";
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                    stmt.setInt(1, chatId);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next()) {
+                            int member1 = rs.getInt("member1");
+                            int member2 = rs.getInt("member2");
+                            return (member1 == currentUserId) ? member2 : member1;
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // not found
+    }
+
+    public void insertMessage(int senderId, int chatId, String content) {
+        String query = "INSERT INTO message (sender_id, target_chat_id, content, send_date) VALUES (?, ?, ?, NOW())";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement stmt = connection.prepareStatement(query)) {
+
+                stmt.setInt(1, senderId);
+                stmt.setInt(2, chatId);
+                stmt.setString(3, content);
+
+                stmt.executeUpdate();
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ArrayList<String[]> getMessagesForChat(int chatId) {
+        ArrayList<String[]> messages = new ArrayList<>();
+        String query = "SELECT sender_id, content FROM message WHERE target_chat_id = ? ORDER BY send_date ASC";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement stmt = connection.prepareStatement(query)) {
+
+                stmt.setInt(1, chatId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        int senderId = rs.getInt("sender_id");
+                        String content = rs.getString("content");
+                        String senderUsername = getUsernameById(senderId);
+                        messages.add(new String[]{senderUsername, content});
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return messages;
+    }
+
+
+
+
 }
