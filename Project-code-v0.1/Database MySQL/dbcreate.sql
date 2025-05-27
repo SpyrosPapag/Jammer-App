@@ -102,7 +102,10 @@ CREATE TABLE chat_request(
 
 CREATE TABLE notification(
     notification_id BIGINT NOT NULL AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
     source_id BIGINT NOT NULL,
     source_type TINYINT NOT NULL,
-    PRIMARY KEY(notification_id)
+    PRIMARY KEY(notification_id),
+    CONSTRAINT notification_user_key FOREIGN KEY(user_id)
+    REFERENCES user(user_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
