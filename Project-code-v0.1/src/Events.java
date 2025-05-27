@@ -42,14 +42,14 @@ public class Events extends JFrame{
             });
         });
 
-//
-//        listingsButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new Listings();
-//            }
-//        });
+
+        listingsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new Listings(user);
+            }
+        });
 //
 //        notifsButton.addActionListener(new ActionListener() {
 //            @Override

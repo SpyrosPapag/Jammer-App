@@ -18,7 +18,7 @@ public class DBManager {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
             {
-                String query = "SELECT user_id FROM user WHERE username = ? AND password = ?";
+                String query = "SELECT * FROM user WHERE username = ? AND password = ?";
                 try (PreparedStatement preparedStatement = connection.prepareStatement(query))
                 {
                     preparedStatement.setString(1, username);
@@ -26,6 +26,10 @@ public class DBManager {
                     try (ResultSet resultSet = preparedStatement.executeQuery())
                     {
                         if(resultSet.next()) // Returns true if the result set is not empty (valid credentials)
+                            Main.pushNotif = resultSet.getBoolean(3);
+                            Main.listingNotif = resultSet.getBoolean(4);
+                            Main.eventNotif = resultSet.getBoolean(5);
+                            Main.chatNotif = resultSet.getBoolean(6);
                             return resultSet.getInt(1); // return user_id
                     }
                 }
@@ -59,6 +63,29 @@ public class DBManager {
             e.printStackTrace();
         }
         return 0; // 0 for invalid
+    }
+
+    public void updateNotificationSettings(){
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "INSERT INTO user(username, password) VALUES(?, ?)";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                {
+                    preparedStatement.setString(1, username);
+                    preparedStatement.setString(2, password);
+                    preparedStatement.executeUpdate();
+                    try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                        if (resultSet.next())
+                            return resultSet.getInt(1);
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public ArrayList<Post> getPosts(List<Integer> suggestedPostIDs)
