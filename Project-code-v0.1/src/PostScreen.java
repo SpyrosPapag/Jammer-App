@@ -30,7 +30,7 @@ public class PostScreen extends JFrame {
         setLocationRelativeTo(null);
 
         DBManager postScrnManager = new DBManager();
-        if(postScrnManager.isInterested(Main.loggeduser)){
+        if(postScrnManager.isInterested(Main.loggeduser, post.getPost_id())){
             interestedButton.setEnabled(true);
         }
         else

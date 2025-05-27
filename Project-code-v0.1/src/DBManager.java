@@ -26,10 +26,10 @@ public class DBManager {
                     try (ResultSet resultSet = preparedStatement.executeQuery())
                     {
                         if(resultSet.next()) // Returns true if the result set is not empty (valid credentials)
-                            Main.pushNotif = resultSet.getBoolean(3);
-                            Main.listingNotif = resultSet.getBoolean(4);
-                            Main.eventNotif = resultSet.getBoolean(5);
-                            Main.chatNotif = resultSet.getBoolean(6);
+                            Main.pushNotif = resultSet.getBoolean(5);
+                            Main.listingNotif = resultSet.getBoolean(6);
+                            Main.eventNotif = resultSet.getBoolean(7);
+                            Main.chatNotif = resultSet.getBoolean(8);
                             return resultSet.getInt(1); // return user_id
                     }
                 }
@@ -379,16 +379,17 @@ public class DBManager {
         return 0;
     }
 
-    public Boolean isInterested(Integer user){
+    public Boolean isInterested(Integer user, Integer post){
         try
         {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
             {
-                String query = "SELECT interested_user_id FROM interested WHERE interested_user_id = ?";
+                String query = "SELECT interested_user_id FROM interested WHERE interested_user_id = ? AND target_post_id = ?";
                 try (PreparedStatement preparedStatement = connection.prepareStatement(query))
                 {
                     preparedStatement.setInt(1, user);
+                    preparedStatement.setInt(2, post);
                     try (ResultSet resultSet = preparedStatement.executeQuery())
                     {
                         if(resultSet.isBeforeFirst())
