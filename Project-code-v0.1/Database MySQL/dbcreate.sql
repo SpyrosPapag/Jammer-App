@@ -99,3 +99,10 @@ CREATE TABLE chat_request(
     CONSTRAINT chat_request_source_key FOREIGN KEY(source_id)
     REFERENCES post(post_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+CREATE TABLE notification(
+    notification_id BIGINT NOT NULL AUTO_INCREMENT,
+    source_id BIGINT NOT NULL,
+    source_type TINYINT NOT NULL,
+    PRIMARY KEY(notification_id)
+);
