@@ -13,7 +13,8 @@ CREATE TABLE user(
     chat_notifications BOOL NOT NULL DEFAULT 0,
     avatar_url TEXT,
     bio VARCHAR(255),
-    verified BOOL,
+    verified BOOL NOT NULL DEFAULT 0,
+	request BOOL NOT NULL DEFAULT 0,
     genre_preferences SET ('Electronic', 'Rap', 'Pop', 'Rock', 'Jazz', 'Other'),
     preferences_json TEXT,
     PRIMARY KEY(user_id)
