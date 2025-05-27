@@ -71,21 +71,130 @@ public class DBManager {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
             {
-                String query = "INSERT INTO user(username, password) VALUES(?, ?)";
+                String query = "UPDATE user SET push_notifications = ?, listing_notifications = ?, event_notifications = ?, chat_notifications = ? WHERE user_id = ?";
                 try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
                 {
-                    preparedStatement.setString(1, username);
-                    preparedStatement.setString(2, password);
+                    preparedStatement.setBoolean(1, Main.pushNotif);
+                    preparedStatement.setBoolean(2, Main.listingNotif);
+                    preparedStatement.setBoolean(3, Main.eventNotif);
+                    preparedStatement.setBoolean(4, Main.chatNotif);
                     preparedStatement.executeUpdate();
-                    try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                        if (resultSet.next())
-                            return resultSet.getInt(1);
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void distributeNotifications(Post post){
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "INSERT INTO notification(user_id, source_id, source_type) SELECT follower_id, ?, 0 FROM followers INNER JOIN" +
+                               "user ON follower_id = user_id" +
+                               "WHERE following_id = ?";
+                if(post.getType().equals("event")){
+                    query += " AND event_notifications = 1";
+                }
+                else{
+                    query += " AND listing_notifications = 1";
+                }
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                {
+                    preparedStatement.setInt(1, post.getPost_id());
+                    preparedStatement.setInt(2, post.getPoster_id());
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ArrayList<Notification> getNotifications(Integer user_id){
+        ArrayList<Notification> notificationResults = new ArrayList<>();
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "SELECT * FROM notification WHERE user_id = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query))
+                {
+                    preparedStatement.setInt(1, user_id);
+
+                    try (ResultSet resultSet = preparedStatement.executeQuery())
+                    {
+                        int notification_id, source_id, source_type;
+                        while(resultSet.next())
+                        {
+                            notification_id = resultSet.getInt(1);
+                            source_id = resultSet.getInt(3);
+                            source_type = resultSet.getInt(4);
+                            notificationResults.add(new Notification(notification_id, source_id, source_type));
+                        }
                     }
                 }
             }
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
+        return notificationResults;
+    }
+
+    public void clearNotifications(Integer user_id){
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "DELETE FROM notification WHERE user_id = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                {
+                    preparedStatement.setInt(1, user_id);
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Post getPost(Integer post_id){
+        String query = "SELECT * FROM post WHERE post_id = ?";
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query))
+                {
+                    preparedStatement.setInt(1, post_id);
+
+                    try (ResultSet resultSet = preparedStatement.executeQuery())
+                    {
+                        Integer poster_id, popularity;
+                        String description, pictures_url_json, type, location, date;
+                        while(resultSet.next())
+                        {
+                            poster_id = resultSet.getInt(2);
+                            pictures_url_json = resultSet.getString(3);
+                            description = resultSet.getString(4);
+                            type = resultSet.getString(5);
+                            date = resultSet.getString(6);
+                            location = resultSet.getString(7);
+                            popularity = resultSet.getInt(8);
+                            return new Post(post_id, poster_id, description, pictures_url_json, type, date, location, popularity);
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public ArrayList<Post> getPosts(List<Integer> suggestedPostIDs)

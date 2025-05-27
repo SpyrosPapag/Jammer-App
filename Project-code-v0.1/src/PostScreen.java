@@ -51,15 +51,15 @@ public class PostScreen extends JFrame {
                 new Listings(Main.loggeduser);
             }
         });
-//
-//        notifsButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new NotificationsScreen();
-//            }
-//        });
-//
+
+        notifsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new NotificationScreen(Main.loggeduser);
+            }
+        });
+
 //        chatButton.addActionListener(new ActionListener() {
 //            @Override
 //            public void actionPerformed(ActionEvent e) {

@@ -57,14 +57,14 @@ public class Profile extends JFrame{
                 new Listings(user);
             }
         });
-//
-//        notifsButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new NotificationsScreen();
-//            }
-//        });
+
+        notifsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new NotificationScreen(user);
+            }
+        });
 //
 //        chatButton.addActionListener(new ActionListener() {
 //            @Override

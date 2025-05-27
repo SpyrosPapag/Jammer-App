@@ -136,6 +136,9 @@ public class newPost extends JFrame{
                                 ex.printStackTrace();
                             }
                         }
+
+                        post.setPost_id(post_id);
+                        Notification.notify(post);
                     }
                         dispose();
                         new Profile(user);
