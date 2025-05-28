@@ -5,9 +5,18 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/Project-code-v0.1/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Project-code-v0.1/src/Media" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/Project-code-v0.1/Tests" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="mysql-connector-j-9.2.0" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/Project-code-v0.1/lib/mysql-connector-j-9.3.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

@@ -41,6 +41,70 @@ public class Profile extends JFrame{
                 new newPost(user);
             }
         });
+
+        editProfileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new EditProfile(user);
+            }
+        });
+
+        listingsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new Listings(user);
+            }
+        });
+
+        notifsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new NotificationScreen(user);
+            }
+        });
+//
+//        chatButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                dispose();
+//                new ChatScreen();
+//            }
+//        });
+
+        profileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new Profile(user);
+            }
+        });
+
+        eventsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new Events(user);
+            }
+        });
+
+    }
+
+    public Profile(Integer logedInUser, Integer otherUser)
+    {
+        setContentPane(Wrapper);
+        setTitle("Profile");
+        setVisible(true);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(375,740);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        viewProfile(postsPanel, Bio, Avatar, Other, otherUser);
+
+        newPostButton.setVisible(false);
+        editProfileButton.setVisible(false);
 //
 //        editProfileButton.addActionListener(new ActionListener() {
 //            @Override
@@ -78,7 +142,7 @@ public class Profile extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                new Profile(user);
+                new Profile(logedInUser);
             }
         });
 
@@ -86,10 +150,9 @@ public class Profile extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                new Events(user);
+                new Events(logedInUser);
             }
         });
-
     }
 
     private void viewProfile(JScrollPane postsPanel, JLabel Bio, JLabel Avatar, JLabel Other, Integer user)
