@@ -450,4 +450,120 @@ public class DBManager {
             e.printStackTrace();
         }
     }
+
+
+    public ArrayList<Object> getProfileDetails(Integer userId) {
+        ArrayList<Object> profileDetails = new ArrayList<>();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                String query = "SELECT username, bio, verified FROM user WHERE user_id = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                    preparedStatement.setInt(1, userId);
+                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                        if (resultSet.next()) {
+                            profileDetails.add(resultSet.getString("username"));
+                            profileDetails.add(resultSet.getString("bio"));
+                            profileDetails.add(resultSet.getBoolean("verified"));
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return profileDetails;
+    }
+
+    public boolean checkVerificationRequest(Integer userId) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                String query = "SELECT request FROM user WHERE user_id = ?";
+                try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                    stmt.setInt(1, userId);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs.next()) {
+                        return rs.getInt("request") == 1;
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean submitVerificationRequest(Integer userId) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                String query = "UPDATE user SET request = 1 WHERE user_id = ?";
+                try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                    stmt.setInt(1, userId);
+                    return stmt.executeUpdate() > 0;
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    public String getUserPreferences(Integer userId) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                // Changed column name from preferences_json to preferences
+                String query = "SELECT preferences_json FROM user WHERE user_id = ?";
+                try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                    stmt.setInt(1, userId);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs.next()) {
+                        return rs.getString("preferences_json");
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean updateAvatarUrl(int userId, String avatarFileName) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                String query = "UPDATE user SET avatar_url = ? WHERE user_id = ?";
+                try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                    stmt.setString(1, avatarFileName);
+                    stmt.setInt(2, userId);
+                    return stmt.executeUpdate() > 0;
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+
+        }
+        return false;
+    }
+
+    public boolean saveUserPreferences(Integer userId, String preferences) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                // Changed column name from preferences_json to preferences
+                String query = "UPDATE user SET preferences_json = ? WHERE user_id = ?";
+                try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                    stmt.setString(1, preferences);
+                    stmt.setInt(2, userId);
+                    return stmt.executeUpdate() > 0;
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

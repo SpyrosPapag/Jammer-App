@@ -5,6 +5,7 @@ USE jammer;
 CREATE TABLE user(
     user_id BIGINT NOT NULL AUTO_INCREMENT,
     username VARCHAR(20) NOT NULL,
+    mail VARCHAR(255) NOT NULL,
     password VARCHAR(20) NOT NULL,
     push_notifications BOOL NOT NULL DEFAULT 0,
     listing_notifications BOOL NOT NULL DEFAULT 0,
@@ -12,7 +13,9 @@ CREATE TABLE user(
     chat_notifications BOOL NOT NULL DEFAULT 0,
     avatar_url TEXT,
     bio VARCHAR(255),
-    verified BOOL,
+    verified BOOL NOT NULL DEFAULT 0,
+    request BOOL NOT NULL DEFAULT 0,
+    genre_preferences SET ('Electronic', 'Rap', 'Pop', 'Rock', 'Jazz', 'Other'),
     preferences_json TEXT,
     PRIMARY KEY(user_id)
 );
@@ -98,4 +101,14 @@ CREATE TABLE chat_request(
     REFERENCES user(user_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT chat_request_source_key FOREIGN KEY(source_id)
     REFERENCES post(post_id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE notification(
+    notification_id BIGINT NOT NULL AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    source_id BIGINT NOT NULL,
+    source_type TINYINT NOT NULL,
+    PRIMARY KEY(notification_id),
+    CONSTRAINT notification_user_key FOREIGN KEY(user_id)
+    REFERENCES user(user_id) ON UPDATE CASCADE ON DELETE CASCADE
 );

@@ -92,6 +92,69 @@ public class Profile extends JFrame{
 
     }
 
+    public Profile(Integer logedInUser, Integer otherUser)
+    {
+        setContentPane(Wrapper);
+        setTitle("Profile");
+        setVisible(true);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(375,740);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        viewProfile(postsPanel, Bio, Avatar, Other, otherUser);
+
+        newPostButton.setVisible(false);
+        editProfileButton.setVisible(false);
+//
+//        editProfileButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                dispose();
+//                new editProfile();
+//            }
+//        });
+
+//        listingsButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                dispose();
+//                new Listings();
+//            }
+//        });
+//
+//        notifsButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                dispose();
+//                new NotificationsScreen();
+//            }
+//        });
+//
+//        chatButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                dispose();
+//                new ChatScreen();
+//            }
+//        });
+
+        profileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new Profile(logedInUser);
+            }
+        });
+
+        eventsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new Events(logedInUser);
+            }
+        });
+    }
+
     private void viewProfile(JScrollPane postsPanel, JLabel Bio, JLabel Avatar, JLabel Other, Integer user)
     {
         // fetch and display user`s info

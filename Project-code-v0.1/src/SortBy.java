@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class SortBy extends JFrame{
@@ -25,22 +26,32 @@ public class SortBy extends JFrame{
 
 
         dateButton.addActionListener(e -> {
-            postsToDisplay.sort(Comparator.comparing(Post::getDate));
+            sort(postsToDisplay, "date");
             callback.accept(postsToDisplay);
             dispose();
         });
 
 
         distanceButton.addActionListener(e -> {
-            postsToDisplay.sort(Comparator.comparing(Post::getLocation)); // alphabetical
+            sort(postsToDisplay, "distance");
             callback.accept(postsToDisplay);
             dispose();
         });
 
         popularityButton.addActionListener(e -> {
-            postsToDisplay.sort(Comparator.comparing(Post::getPopularity).reversed());
+            sort(postsToDisplay, "popularity");
             callback.accept(postsToDisplay);
             dispose();
         });
+    }
+
+    public static void sort(ArrayList<Post> posts, String type)
+    {
+        if(Objects.equals(type, "date"))
+            posts.sort(Comparator.comparing(Post::getDate));
+        else if(Objects.equals(type, "distance"))
+            posts.sort(Comparator.comparing(Post::getLocation)); // alphabetical
+        else if(Objects.equals(type, "popularity"))
+            posts.sort(Comparator.comparing(Post::getPopularity).reversed());
     }
 }

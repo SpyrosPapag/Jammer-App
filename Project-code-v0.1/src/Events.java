@@ -31,15 +31,21 @@ public class Events extends JFrame{
         viewFeed(feedPanel, user, "event");
 
         filterButton.addActionListener(e -> {
-            new Filter(postsToDisplay, filtered -> {
-                refreshFeed(filtered);
+            new Filter("events", postsToDisplay, filtered -> {
+                if(filtered.isEmpty())
+                    JOptionPane.showMessageDialog(null, "No results for filter.", "No results", JOptionPane.INFORMATION_MESSAGE);
+                else
+                    refreshFeed(filtered);
             });
         });
 
         sortByButton.addActionListener(e -> {
-            new SortBy(postsToDisplay, sorted -> {
-                refreshFeed(sorted);
-            });
+            if(postsToDisplay.isEmpty())
+                JOptionPane.showMessageDialog(null, "Nothing to sort", "Nothing to sort", JOptionPane.INFORMATION_MESSAGE);
+            else
+                new SortBy(postsToDisplay, sorted -> {
+                    refreshFeed(sorted);
+                });
         });
 
 

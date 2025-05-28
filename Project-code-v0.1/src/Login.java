@@ -35,8 +35,8 @@ public class Login extends JFrame{
                     passwordPF.setText("");
                     Main.loggeduser = user;
                     JOptionPane.showMessageDialog(null, "Login Successful!");
-//                    dispose();
-//                    new FeedPage();
+                    dispose();
+                    new Events(user);
                 }
                 else
                 {
