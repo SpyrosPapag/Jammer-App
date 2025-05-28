@@ -65,13 +65,13 @@ public class Events extends JFrame{
             }
         });
 //
-//        chatButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new ChatScreen();
-//            }
-//        });
+        chatButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new Chats(user);
+            }
+        });
 
         profileButton.addActionListener(new ActionListener() {
             @Override

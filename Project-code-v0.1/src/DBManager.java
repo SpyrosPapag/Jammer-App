@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
@@ -379,6 +380,254 @@ public class DBManager {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public String getUsernameById(int userId) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                String query = "SELECT username FROM user WHERE user_id = ?";
+                try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                    stmt.setInt(1, userId);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next()) {
+                            return rs.getString("username");
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public ArrayList<String[]> getChatsForUser(int userId) {
+        ArrayList<String[]> chatList = new ArrayList<>();
+        String query = "SELECT chat_id, member1, member2 FROM chat WHERE member1 = ? OR member2 = ?";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                    stmt.setInt(1, userId);
+                    stmt.setInt(2, userId);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        while (rs.next()) {
+                            int chatId = rs.getInt("chat_id");
+                            int member1 = rs.getInt("member1");
+                            int member2 = rs.getInt("member2");
+                            int otherId = (member1 == userId) ? member2 : member1;
+                            String otherUsername = getUsernameById(otherId);
+                            chatList.add(new String[]{String.valueOf(chatId), otherUsername});
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+
+        return chatList;
+    }
+
+    public int getOtherUserId(int chatId, int currentUserId) {
+        String query = "SELECT member1, member2 FROM chat WHERE chat_id = ?";
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                    stmt.setInt(1, chatId);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next()) {
+                            int member1 = rs.getInt("member1");
+                            int member2 = rs.getInt("member2");
+                            return (member1 == currentUserId) ? member2 : member1;
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // not found
+    }
+
+    public void insertMessage(int senderId, int chatId, String content) {
+        String query = "INSERT INTO message (sender_id, target_chat_id, content, send_date) VALUES (?, ?, ?, NOW())";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement stmt = connection.prepareStatement(query)) {
+
+                stmt.setInt(1, senderId);
+                stmt.setInt(2, chatId);
+                stmt.setString(3, content);
+
+                stmt.executeUpdate();
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ArrayList<String[]> getMessagesForChat(int chatId) {
+        ArrayList<String[]> messages = new ArrayList<>();
+        String query = "SELECT sender_id, content FROM message WHERE target_chat_id = ? ORDER BY send_date ASC";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement stmt = connection.prepareStatement(query)) {
+
+                stmt.setInt(1, chatId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        int senderId = rs.getInt("sender_id");
+                        String content = rs.getString("content");
+                        String senderUsername = getUsernameById(senderId);
+                        messages.add(new String[]{senderUsername, content});
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return messages;
+    }
+
+    public ArrayList<String> getPendingRequestUsernames(int recipientId) {
+        ArrayList<String> usernames = new ArrayList<>();
+        String query = "SELECT u.username FROM chat_request cr " +
+                "JOIN user u ON cr.sender_id = u.user_id " +
+                "WHERE cr.recipient_id = ? AND cr.status = 'pending'";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement stmt = connection.prepareStatement(query)) {
+
+                stmt.setInt(1, recipientId);
+                ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    usernames.add(rs.getString("username"));
+                }
+
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+
+        return usernames;
+    }
+
+
+    public void acceptChatRequest(int senderId, int recipientId) {
+        String updateRequestStatus = "UPDATE chat_request SET status = 'Accepted' WHERE sender_id = ? AND recipient_id = ? AND status = 'pending'";
+        String insertChat = "INSERT INTO chat (member1, member2) VALUES (?, ?)";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                conn.setAutoCommit(false);
+
+                try (PreparedStatement updateStmt = conn.prepareStatement(updateRequestStatus);
+                     PreparedStatement insertStmt = conn.prepareStatement(insertChat)) {
+
+                    // Update request status
+                    updateStmt.setInt(1, senderId);
+                    updateStmt.setInt(2, recipientId);
+                    int updatedRows = updateStmt.executeUpdate();
+
+                    if (updatedRows > 0) {
+                        // Insert into chat only if request was updated
+                        insertStmt.setInt(1, senderId);
+                        insertStmt.setInt(2, recipientId);
+                        insertStmt.executeUpdate();
+
+                        conn.commit();
+                    } else {
+                        conn.rollback();
+                    }
+                } catch (SQLException e) {
+                    conn.rollback();
+                    throw e;
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public int getUserIdByUsername(String username) {
+        String query = "SELECT user_id FROM user WHERE username = ?";
+        int userId = -1;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement stmt = conn.prepareStatement(query)) {
+
+                stmt.setString(1, username);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        userId = rs.getInt("user_id");
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return userId;
+    }
+
+    public void declineChatRequest(int senderId, int recipientId) {
+        String updateRequestStatus = "UPDATE chat_request SET status = 'Declined' WHERE sender_id = ? AND recipient_id = ? AND status = 'pending'";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement stmt = conn.prepareStatement(updateRequestStatus)) {
+
+                stmt.setInt(1, senderId);
+                stmt.setInt(2, recipientId);
+                stmt.executeUpdate();
+
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public ArrayList<String> getPostsByUserId(int userId) {
+        ArrayList<String> posts = new ArrayList<>();
+        String query = "SELECT post_id, description, type FROM post WHERE poster_id = ?";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement stmt = connection.prepareStatement(query)) {
+
+                stmt.setInt(1, userId);
+                ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    long postId = rs.getLong("post_id");
+                    String desc = rs.getString("description");
+                    String type = rs.getString("type");
+                    posts.add("[" + type + "] #" + postId + ": " + desc);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return posts;
     }
 
     public Boolean isInterested(Integer user, Integer post){
