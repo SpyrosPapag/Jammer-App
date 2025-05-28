@@ -3,24 +3,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class Events extends JFrame{
+public class NotificationScreen extends JFrame {
     private JPanel Wrapper;
-    private JPanel filterSort_Panel;
     private JPanel pagesPanel;
-    private JButton filterButton;
-    private JButton sortByButton;
     private JButton listingsButton;
     private JButton chatButton;
     private JButton profileButton;
     private JButton notifsButton;
     private JButton eventsButton;
-    private JScrollPane feedPanel;
-    private ArrayList<Post> postsToDisplay;
+    private JScrollPane notificationsPanel;
+    private JButton clearButton;
+    private JButton settingsButton;
+    private ArrayList<Notification> notificationsToDisplay;
+    private NotificationSettings settingsScreen;
 
-    public Events(Integer user)
+    public NotificationScreen(Integer user)
     {
         setContentPane(Wrapper);
-        setTitle("Events");
+        setTitle("Notifications");
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(375,740);
@@ -28,26 +28,26 @@ public class Events extends JFrame{
         setLocationRelativeTo(null);
 
         // fetch and display users suggested events feed
-        viewFeed(feedPanel, user, "event");
+        viewNotifications(notificationsPanel, user);
 
-        filterButton.addActionListener(e -> {
-            new Filter("events", postsToDisplay, filtered -> {
-                if(filtered.isEmpty())
-                    JOptionPane.showMessageDialog(null, "No results for filter.", "No results", JOptionPane.INFORMATION_MESSAGE);
-                else
-                    refreshFeed(filtered);
-            });
+        settingsScreen = null;
+        settingsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(settingsScreen != null)
+                    settingsScreen.dispose();
+                settingsScreen = new NotificationSettings();
+            }
         });
 
-        sortByButton.addActionListener(e -> {
-            if(postsToDisplay.isEmpty())
-                JOptionPane.showMessageDialog(null, "Nothing to sort", "Nothing to sort", JOptionPane.INFORMATION_MESSAGE);
-            else
-                new SortBy(postsToDisplay, sorted -> {
-                    refreshFeed(sorted);
-                });
+        clearButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new DBManager().clearNotifications(user);
+                dispose();
+                new NotificationScreen(user);
+            }
         });
-
 
         listingsButton.addActionListener(new ActionListener() {
             @Override
@@ -90,20 +90,13 @@ public class Events extends JFrame{
         });
     }
 
-    private void viewFeed(JScrollPane feedPanel, Integer user, String type)
+    private void viewNotifications(JScrollPane notificationsPanel, Integer user)
     {
-        // get user`s suggested posts
-        Suggested suggester = new Suggested();
-        postsToDisplay = suggester.suggestPosts(user, type);
-        if(postsToDisplay.isEmpty()) return;
+        // get user`s notifications
+        notificationsToDisplay = new DBManager().getNotifications(user);
+        if(notificationsToDisplay.isEmpty()) return;
 
         // display the returned posts
-        Post.displayPosts(postsToDisplay, feedPanel);
+        Notification.displayNotifications(notificationsToDisplay, notificationsPanel);
     }
-
-    public void refreshFeed(ArrayList<Post> newPosts) {
-        this.postsToDisplay = newPosts;
-        Post.displayPosts(postsToDisplay, feedPanel);
-    }
-
 }

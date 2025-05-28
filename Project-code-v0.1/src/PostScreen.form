@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="PostScreen">
+  <grid id="27dc6" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="364" height="744"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="c57f7" binding="Wrapper" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-12626333"/>
+          <maximumSize width="360" height="740"/>
+          <minimumSize width="360" height="740"/>
+          <preferredSize width="360" height="740"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <scrollpane id="1c7df" binding="infoPanel">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <autoscrolls value="false"/>
+              <horizontalScrollBarPolicy value="31"/>
+              <verticalScrollBarPolicy value="20"/>
+              <wheelScrollingEnabled value="true"/>
+            </properties>
+            <border type="none"/>
+            <children/>
+          </scrollpane>
+          <component id="81fa8" class="javax.swing.JLabel" binding="Avatar">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value=""/>
+            </properties>
+          </component>
+          <component id="e2287" class="javax.swing.JButton" binding="interestedButton" default-binding="true">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <enabled value="false"/>
+              <hideActionText value="false"/>
+              <text value="Interested"/>
+              <verticalAlignment value="0"/>
+            </properties>
+          </component>
+          <grid id="cff2f" binding="pagesPanel" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <minimum-size width="360" height="25"/>
+                <preferred-size width="360" height="25"/>
+                <maximum-size width="360" height="25"/>
+              </grid>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="235ce" class="javax.swing.JButton" binding="listingsButton" default-binding="true">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                    <minimum-size width="72" height="25"/>
+                    <preferred-size width="72" height="25"/>
+                    <maximum-size width="72" height="25"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <font swing-font="Button.font"/>
+                  <hideActionText value="false"/>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <iconTextGap value="4"/>
+                  <text value="Listings"/>
+                  <verticalAlignment value="0"/>
+                </properties>
+              </component>
+              <component id="e2482" class="javax.swing.JButton" binding="chatButton" default-binding="true">
+                <constraints>
+                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                    <minimum-size width="72" height="25"/>
+                    <preferred-size width="72" height="25"/>
+                    <maximum-size width="72" height="25"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <text value="Chat"/>
+                </properties>
+              </component>
+              <component id="d594d" class="javax.swing.JButton" binding="profileButton" default-binding="true">
+                <constraints>
+                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                    <minimum-size width="72" height="25"/>
+                    <preferred-size width="72" height="25"/>
+                    <maximum-size width="72" height="25"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <text value="Profile"/>
+                </properties>
+              </component>
+              <component id="b136" class="javax.swing.JButton" binding="notifsButton" default-binding="true">
+                <constraints>
+                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                    <minimum-size width="72" height="25"/>
+                    <preferred-size width="72" height="25"/>
+                    <maximum-size width="72" height="25"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <text value="Notifs"/>
+                </properties>
+              </component>
+              <component id="8e5bc" class="javax.swing.JButton" binding="eventsButton" default-binding="true">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                    <minimum-size width="72" height="25"/>
+                    <preferred-size width="72" height="25"/>
+                    <maximum-size width="72" height="25"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <text value="Events"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>

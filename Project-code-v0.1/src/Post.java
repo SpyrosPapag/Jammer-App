@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.Arrays;
@@ -113,6 +115,13 @@ public class Post {
             // photos section
             postPanel.add(displayMultiplePhotos(post), BorderLayout.CENTER);
 
+            postPanel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e){
+                    SwingUtilities.getWindowAncestor(displayPanel).dispose();
+                    new PostScreen(post);
+                }
+            });
             container.add(postPanel);
             container.add(Box.createVerticalStrut(5));
         }

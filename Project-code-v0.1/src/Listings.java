@@ -3,7 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class Events extends JFrame{
+public class Listings extends JFrame{
     private JPanel Wrapper;
     private JPanel filterSort_Panel;
     private JPanel pagesPanel;
@@ -17,35 +17,29 @@ public class Events extends JFrame{
     private JScrollPane feedPanel;
     private ArrayList<Post> postsToDisplay;
 
-    public Events(Integer user)
+    public Listings(Integer user)
     {
         setContentPane(Wrapper);
-        setTitle("Events");
+        setTitle("Listings");
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(375,740);
         setResizable(false);
         setLocationRelativeTo(null);
 
-        // fetch and display users suggested events feed
-        viewFeed(feedPanel, user, "event");
+        // fetch and display users suggested listings feed
+        viewFeed(feedPanel, user, "listing");
 
         filterButton.addActionListener(e -> {
-            new Filter("events", postsToDisplay, filtered -> {
-                if(filtered.isEmpty())
-                    JOptionPane.showMessageDialog(null, "No results for filter.", "No results", JOptionPane.INFORMATION_MESSAGE);
-                else
-                    refreshFeed(filtered);
+            new Filter(postsToDisplay, filtered -> {
+                refreshFeed(filtered);
             });
         });
 
         sortByButton.addActionListener(e -> {
-            if(postsToDisplay.isEmpty())
-                JOptionPane.showMessageDialog(null, "Nothing to sort", "Nothing to sort", JOptionPane.INFORMATION_MESSAGE);
-            else
-                new SortBy(postsToDisplay, sorted -> {
-                    refreshFeed(sorted);
-                });
+            new SortBy(postsToDisplay, sorted -> {
+                refreshFeed(sorted);
+            });
         });
 
 

@@ -9,6 +9,7 @@ public class DBManager {
     private static final String JDBC_URL = Main.JDBC_URL;
     private static final String DB_USER = Main.DB_USER;
     private static final String DB_PASSWORD = Main.DB_PASSWORD;
+    private static final int    SUGGESTED_AMOUNT = 100;
 
     public Integer credentialsCheck(String username, String password)
     {
@@ -17,7 +18,8 @@ public class DBManager {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
             {
-                String query = "SELECT user_id FROM user WHERE username = ? AND password = ?";
+                String query = "SELECT user_id, push_notifications, listing_notifications, event_notifications, chat_notifications " +
+                               "FROM user WHERE username = ? AND password = ?";
                 try (PreparedStatement preparedStatement = connection.prepareStatement(query))
                 {
                     preparedStatement.setString(1, username);
@@ -25,6 +27,10 @@ public class DBManager {
                     try (ResultSet resultSet = preparedStatement.executeQuery())
                     {
                         if(resultSet.next()) // Returns true if the result set is not empty (valid credentials)
+                            Main.pushNotif = resultSet.getBoolean(2);
+                            Main.listingNotif = resultSet.getBoolean(3);
+                            Main.eventNotif = resultSet.getBoolean(4);
+                            Main.chatNotif = resultSet.getBoolean(5);
                             return resultSet.getInt(1); // return user_id
                     }
                 }
@@ -58,6 +64,139 @@ public class DBManager {
             e.printStackTrace();
         }
         return 0; // 0 for invalid
+    }
+
+    public void updateNotificationSettings(){
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "UPDATE user SET push_notifications = ?, listing_notifications = ?, event_notifications = ?, chat_notifications = ? WHERE user_id = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                {
+                    preparedStatement.setBoolean(1, Main.pushNotif);
+                    preparedStatement.setBoolean(2, Main.listingNotif);
+                    preparedStatement.setBoolean(3, Main.eventNotif);
+                    preparedStatement.setBoolean(4, Main.chatNotif);
+                    preparedStatement.setInt(5, Main.loggeduser);
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void distributeNotifications(Post post){
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "INSERT INTO notification(user_id, source_id, source_type) SELECT follower_id, ?, 0 FROM followers INNER JOIN " +
+                               "user ON follower_id = user_id " +
+                               "WHERE following_id = ? ";
+                if(post.getType().equals("event")){
+                    query += "AND event_notifications = 1";
+                }
+                else{
+                    query += "AND listing_notifications = 1";
+                }
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                {
+                    preparedStatement.setInt(1, post.getPost_id());
+                    preparedStatement.setInt(2, post.getPoster_id());
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ArrayList<Notification> getNotifications(Integer user_id){
+        ArrayList<Notification> notificationResults = new ArrayList<>();
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "SELECT * FROM notification WHERE user_id = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query))
+                {
+                    preparedStatement.setInt(1, user_id);
+
+                    try (ResultSet resultSet = preparedStatement.executeQuery())
+                    {
+                        int notification_id, source_id, source_type;
+                        while(resultSet.next())
+                        {
+                            notification_id = resultSet.getInt(1);
+                            source_id = resultSet.getInt(3);
+                            source_type = resultSet.getInt(4);
+                            notificationResults.add(new Notification(notification_id, source_id, source_type));
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return notificationResults;
+    }
+
+    public void clearNotifications(Integer user_id){
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "DELETE FROM notification WHERE user_id = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                {
+                    preparedStatement.setInt(1, user_id);
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Post getPost(Integer post_id){
+        String query = "SELECT * FROM post WHERE post_id = ?";
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query))
+                {
+                    preparedStatement.setInt(1, post_id);
+
+                    try (ResultSet resultSet = preparedStatement.executeQuery())
+                    {
+                        Integer poster_id, popularity;
+                        String description, pictures_url_json, type, location, date;
+                        while(resultSet.next())
+                        {
+                            poster_id = resultSet.getInt(2);
+                            pictures_url_json = resultSet.getString(3);
+                            description = resultSet.getString(4);
+                            type = resultSet.getString(5);
+                            date = resultSet.getString(6);
+                            location = resultSet.getString(7);
+                            popularity = resultSet.getInt(8);
+                            return new Post(post_id, poster_id, description, pictures_url_json, type, date, location, popularity);
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public ArrayList<Post> getPosts(List<Integer> suggestedPostIDs)
@@ -139,6 +278,48 @@ public class DBManager {
         return postResults;
     }
 
+    public ArrayList<Post> getPosts(Integer user, String type)
+    {
+        ArrayList<Post> postResults = new ArrayList<>();
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query;
+                if(type.equals("event"))
+                    query = "SELECT * FROM post WHERE post.type = 'event' ORDER BY post.date DESC LIMIT ?";
+                else
+                    query = "SELECT * FROM post WHERE post.type = 'venue' OR post.type = 'lesson' ORDER BY post.date DESC LIMIT ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query))
+                {
+                    preparedStatement.setInt(1, SUGGESTED_AMOUNT);
+
+                    try (ResultSet resultSet = preparedStatement.executeQuery())
+                    {
+                        Integer post_id, poster_id, popularity;
+                        String description, pictures_url_json, post_type, location, date;
+                        while(resultSet.next())
+                        {
+                            post_id = resultSet.getInt(1);
+                            poster_id = resultSet.getInt(2);
+                            pictures_url_json = resultSet.getString(3);
+                            description = resultSet.getString(4);
+                            post_type = resultSet.getString(5);
+                            date = resultSet.getString(6);
+                            location = resultSet.getString(7);
+                            popularity = resultSet.getInt(8);
+                            postResults.add(new Post(post_id, poster_id, description, pictures_url_json, post_type, date, location, popularity));
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return postResults;
+    }
+
     public ArrayList<Object> getProfileInfo(Integer user)
     {
         ArrayList<Object> userInfoResults = new ArrayList<Object>();
@@ -199,7 +380,78 @@ public class DBManager {
         }
         return 0;
     }
-    
+
+    public Boolean isInterested(Integer user, Integer post){
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "SELECT interested_user_id FROM interested WHERE interested_user_id = ? AND target_post_id = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query))
+                {
+                    preparedStatement.setInt(1, user);
+                    preparedStatement.setInt(2, post);
+                    try (ResultSet resultSet = preparedStatement.executeQuery())
+                    {
+                        if(resultSet.isBeforeFirst())
+                        {
+                            return false;
+                        }
+                        else
+                            return true;
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void expressInterest(Integer user, Post post) {
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "INSERT INTO interested VALUES(?, ?)";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                {
+                    preparedStatement.setInt(1, user);
+                    preparedStatement.setInt(2, post.getPost_id());
+
+                    int affected_rows = preparedStatement.executeUpdate();
+                    if (affected_rows > 0) {
+                        query = "INSERT INTO chat_request(sender_id, recipient_id, source_id) VALUES(?, ?, ?)";
+                        try(PreparedStatement insertStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                        {
+                            insertStatement.setInt(1, user);
+                            insertStatement.setInt(2, post.getPoster_id());
+                            insertStatement.setInt(3, post.getPost_id());
+
+                            insertStatement.executeUpdate();
+                        }
+                    }
+
+                    query = "UPDATE post INNER JOIN " +
+                            "(SELECT target_post_id, COUNT(interested_user_id) AS total FROM interested WHERE target_post_id = ?) AS interested_users " +
+                            "ON post.post_id = interested_users.target_post_id " +
+                            "SET popularity = interested_users.total";
+                    try(PreparedStatement updateStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                    {
+                        updateStatement.setInt(1, post.getPost_id());
+
+                        updateStatement.executeUpdate();
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public ArrayList<Object> getProfileDetails(Integer userId) {
         ArrayList<Object> profileDetails = new ArrayList<>();
         try {
@@ -222,7 +474,7 @@ public class DBManager {
         }
         return profileDetails;
     }
-    
+
     public boolean checkVerificationRequest(Integer userId) {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -257,8 +509,8 @@ public class DBManager {
         }
         return false;
     }
-    
-    
+
+
     public String getUserPreferences(Integer userId) {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
