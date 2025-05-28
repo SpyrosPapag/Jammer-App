@@ -13,7 +13,9 @@ public class NotificationScreen extends JFrame {
     private JButton eventsButton;
     private JScrollPane notificationsPanel;
     private JButton clearButton;
+    private JButton settingsButton;
     private ArrayList<Notification> notificationsToDisplay;
+    private NotificationSettings settingsScreen;
 
     public NotificationScreen(Integer user)
     {
@@ -27,6 +29,16 @@ public class NotificationScreen extends JFrame {
 
         // fetch and display users suggested events feed
         viewNotifications(notificationsPanel, user);
+
+        settingsScreen = null;
+        settingsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(settingsScreen != null)
+                    settingsScreen.dispose();
+                settingsScreen = new NotificationSettings();
+            }
+        });
 
         clearButton.addActionListener(new ActionListener() {
             @Override

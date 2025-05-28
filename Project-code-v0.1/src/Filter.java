@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.function.Consumer;
 
 public class Filter extends JFrame{
@@ -8,6 +7,10 @@ public class Filter extends JFrame{
     private JButton dateButton;
     private JButton locationButton;
     private JPanel Wrapper;
+    private JCheckBox pushBox;
+    private JCheckBox eventBox;
+    private JCheckBox listingBox;
+    private JCheckBox chatBox;
 
 
     public Filter(ArrayList<Post> postsToDisplay, Consumer<ArrayList<Post>> callback)

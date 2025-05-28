@@ -18,7 +18,8 @@ public class DBManager {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
             {
-                String query = "SELECT * FROM user WHERE username = ? AND password = ?";
+                String query = "SELECT user_id, push_notifications, listing_notifications, event_notifications, chat_notifications " +
+                               "FROM user WHERE username = ? AND password = ?";
                 try (PreparedStatement preparedStatement = connection.prepareStatement(query))
                 {
                     preparedStatement.setString(1, username);
@@ -26,10 +27,10 @@ public class DBManager {
                     try (ResultSet resultSet = preparedStatement.executeQuery())
                     {
                         if(resultSet.next()) // Returns true if the result set is not empty (valid credentials)
-                            Main.pushNotif = resultSet.getBoolean(5);
-                            Main.listingNotif = resultSet.getBoolean(6);
-                            Main.eventNotif = resultSet.getBoolean(7);
-                            Main.chatNotif = resultSet.getBoolean(8);
+                            Main.pushNotif = resultSet.getBoolean(2);
+                            Main.listingNotif = resultSet.getBoolean(3);
+                            Main.eventNotif = resultSet.getBoolean(4);
+                            Main.chatNotif = resultSet.getBoolean(5);
                             return resultSet.getInt(1); // return user_id
                     }
                 }
@@ -78,6 +79,7 @@ public class DBManager {
                     preparedStatement.setBoolean(2, Main.listingNotif);
                     preparedStatement.setBoolean(3, Main.eventNotif);
                     preparedStatement.setBoolean(4, Main.chatNotif);
+                    preparedStatement.setInt(5, Main.loggeduser);
                     preparedStatement.executeUpdate();
                 }
             }
@@ -92,14 +94,14 @@ public class DBManager {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
             {
-                String query = "INSERT INTO notification(user_id, source_id, source_type) SELECT follower_id, ?, 0 FROM followers INNER JOIN" +
-                               "user ON follower_id = user_id" +
-                               "WHERE following_id = ?";
+                String query = "INSERT INTO notification(user_id, source_id, source_type) SELECT follower_id, ?, 0 FROM followers INNER JOIN " +
+                               "user ON follower_id = user_id " +
+                               "WHERE following_id = ? ";
                 if(post.getType().equals("event")){
-                    query += " AND event_notifications = 1";
+                    query += "AND event_notifications = 1";
                 }
                 else{
-                    query += " AND listing_notifications = 1";
+                    query += "AND listing_notifications = 1";
                 }
                 try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
                 {
@@ -430,6 +432,17 @@ public class DBManager {
 
                             insertStatement.executeUpdate();
                         }
+                    }
+
+                    query = "UPDATE post INNER JOIN " +
+                            "(SELECT target_post_id, COUNT(interested_user_id) AS total FROM interested WHERE target_post_id = ?) AS interested_users " +
+                            "ON post.post_id = interested_users.target_post_id " +
+                            "SET popularity = interested_users.total";
+                    try(PreparedStatement updateStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                    {
+                        updateStatement.setInt(1, post.getPost_id());
+
+                        updateStatement.executeUpdate();
                     }
                 }
             }
