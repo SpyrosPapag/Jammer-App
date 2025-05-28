@@ -41,14 +41,14 @@ public class Profile extends JFrame{
                 new newPost(user);
             }
         });
-//
-//        editProfileButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new editProfile();
-//            }
-//        });
+
+        editProfileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new EditProfile(user);
+            }
+        });
 
         listingsButton.addActionListener(new ActionListener() {
             @Override

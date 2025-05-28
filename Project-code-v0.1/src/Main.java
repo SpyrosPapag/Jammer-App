@@ -13,8 +13,6 @@ public class Main {
     static Post mypost = new Post(1, 1, "Hallo", "photos_temp_tennis.png", "event",
             "2025-05-26", "Here", 10);
     public static void main(String[] args) {
-        loggeduser = new DBManager().credentialsCheck("Bio", "123");
-        //loggeduser = new DBManager().credentialsCheck("Panos", "456");
-        new PostScreen(mypost);
+        new Login();
     }
 }
