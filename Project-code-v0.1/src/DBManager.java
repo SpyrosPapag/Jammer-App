@@ -316,6 +316,141 @@ public class DBManager {
         return messages;
     }
 
+    public ArrayList<String> getPendingRequestUsernames(int recipientId) {
+        ArrayList<String> usernames = new ArrayList<>();
+        String query = "SELECT u.username FROM chat_request cr " +
+                "JOIN user u ON cr.sender_id = u.user_id " +
+                "WHERE cr.recipient_id = ? AND cr.status = 'pending'";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement stmt = connection.prepareStatement(query)) {
+
+                stmt.setInt(1, recipientId);
+                ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    usernames.add(rs.getString("username"));
+                }
+
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+
+        return usernames;
+    }
+
+
+    public void acceptChatRequest(int senderId, int recipientId) {
+        String updateRequestStatus = "UPDATE chat_request SET status = 'Accepted' WHERE sender_id = ? AND recipient_id = ? AND status = 'pending'";
+        String insertChat = "INSERT INTO chat (member1, member2) VALUES (?, ?)";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                conn.setAutoCommit(false);
+
+                try (PreparedStatement updateStmt = conn.prepareStatement(updateRequestStatus);
+                     PreparedStatement insertStmt = conn.prepareStatement(insertChat)) {
+
+                    // Update request status
+                    updateStmt.setInt(1, senderId);
+                    updateStmt.setInt(2, recipientId);
+                    int updatedRows = updateStmt.executeUpdate();
+
+                    if (updatedRows > 0) {
+                        // Insert into chat only if request was updated
+                        insertStmt.setInt(1, senderId);
+                        insertStmt.setInt(2, recipientId);
+                        insertStmt.executeUpdate();
+
+                        conn.commit();
+                    } else {
+                        conn.rollback();
+                    }
+                } catch (SQLException e) {
+                    conn.rollback();
+                    throw e;
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public int getUserIdByUsername(String username) {
+        String query = "SELECT user_id FROM user WHERE username = ?";
+        int userId = -1;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement stmt = conn.prepareStatement(query)) {
+
+                stmt.setString(1, username);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        userId = rs.getInt("user_id");
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return userId;
+    }
+
+    public void declineChatRequest(int senderId, int recipientId) {
+        String updateRequestStatus = "UPDATE chat_request SET status = 'Declined' WHERE sender_id = ? AND recipient_id = ? AND status = 'pending'";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement stmt = conn.prepareStatement(updateRequestStatus)) {
+
+                stmt.setInt(1, senderId);
+                stmt.setInt(2, recipientId);
+                stmt.executeUpdate();
+
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public ArrayList<String> getPostsByUserId(int userId) {
+        ArrayList<String> posts = new ArrayList<>();
+        String query = "SELECT post_id, description, type FROM post WHERE poster_id = ?";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement stmt = connection.prepareStatement(query)) {
+
+                stmt.setInt(1, userId);
+                ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    long postId = rs.getLong("post_id");
+                    String desc = rs.getString("description");
+                    String type = rs.getString("type");
+                    posts.add("[" + type + "] #" + postId + ": " + desc);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return posts;
+    }
+
+
+
 
 
 

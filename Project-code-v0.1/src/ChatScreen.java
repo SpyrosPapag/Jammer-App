@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -13,6 +15,7 @@ public class ChatScreen extends JFrame {
     private JTextField usernameField;
     private JList<Object> messageList;
     private JButton searchButton;
+    private JButton sponsorButton;
     private DefaultListModel<Object> messageListModel;
 
     public ChatScreen(Integer ChatID, Integer userId) {
@@ -30,6 +33,7 @@ public class ChatScreen extends JFrame {
         addFilesButton = new JButton("\uD83D\uDCE9");
         voiceButton = new JButton("\uD83C\uDFA4");
         searchButton = new JButton("\uD83D\uDD0D");
+        sponsorButton = new JButton("\uD83E\uDD1D");
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
 
@@ -110,7 +114,11 @@ public class ChatScreen extends JFrame {
         bottomPanel.add(rightButton, BorderLayout.EAST);
 
         add(bottomPanel, BorderLayout.SOUTH);
-        topPanel.add(searchButton, BorderLayout.EAST);
+        JPanel rightButtonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        rightButtonsPanel.add(sponsorButton);
+        rightButtonsPanel.add(searchButton);
+        topPanel.add(rightButtonsPanel, BorderLayout.EAST);
+
 
         //JLIST EDW
         JScrollPane scrollPane = new JScrollPane(messageList);
@@ -208,6 +216,238 @@ public class ChatScreen extends JFrame {
 
             searchDialog.setVisible(true);
         });
+
+        sponsorButton.addActionListener(e -> {
+            ArrayList<String> posts = db.getPostsByUserId(otherUserId);
+
+            JDialog sponsorDialog = new JDialog(this, "Posts by " + targetUsername, true);
+            sponsorDialog.setSize(400, 400);
+            sponsorDialog.setLocationRelativeTo(this);
+
+            JPanel contentPanel = new JPanel();
+            contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+            contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+            for (String post : posts) {
+                JPanel postPanel = new JPanel(new BorderLayout());
+                postPanel.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                        BorderFactory.createEmptyBorder(10, 10, 10, 10)
+                ));
+                postPanel.setBackground(new Color(250, 250, 250));
+
+                JLabel postLabel = new JLabel("<html>" + post + "</html>");
+                postLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+
+                postPanel.add(postLabel, BorderLayout.CENTER);
+                postPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+
+                // 🔥 Make panel clickable
+                postPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                postPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+                    @Override
+                    public void mouseClicked(java.awt.event.MouseEvent e) {
+                        JDialog shopDialog = new JDialog(sponsorDialog, "Event Shop", true);
+                        shopDialog.setSize(400, 500);
+                        shopDialog.setLocationRelativeTo(sponsorDialog);
+                        shopDialog.setLayout(new BorderLayout());
+
+                        // === Cart panel (bottom) ===
+                        DefaultListModel<String> cartModel = new DefaultListModel<>();
+                        JList<String> cartList = new JList<>(cartModel);
+                        JScrollPane cartScrollPane = new JScrollPane(cartList);
+                        cartScrollPane.setPreferredSize(new Dimension(400, 120));
+
+                        JLabel cartLabel = new JLabel("🛒 Cart");
+                        cartLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+
+                        JButton payButton = new JButton("Pay");
+                        payButton.setFont(new Font("Arial", Font.BOLD, 16));
+
+
+                        JPanel cartControlPanel = new JPanel(new BorderLayout());
+                        cartControlPanel.add(cartLabel, BorderLayout.WEST);
+                        cartControlPanel.add(payButton, BorderLayout.EAST);
+
+
+                        JPanel cartPanel = new JPanel(new BorderLayout());
+                        cartPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                        cartPanel.add(cartControlPanel, BorderLayout.NORTH);
+                        cartPanel.add(cartScrollPane, BorderLayout.CENTER);
+
+
+                        payButton.addActionListener(ev -> {
+                            if (cartModel.isEmpty()) {
+                                JOptionPane.showMessageDialog(shopDialog, "Your cart is empty!", "Payment", JOptionPane.WARNING_MESSAGE);
+                            } else {
+                                // For now, just show a confirmation message
+                                JOptionPane.showMessageDialog(shopDialog, "Thank you for your purchase!", "Payment", JOptionPane.INFORMATION_MESSAGE);
+                                cartModel.clear(); // Clear cart after "payment"
+                            }
+                        });
+
+
+                        // === Category buttons (top) ===
+                        JButton beveragesButton = new JButton("🥤 Beverages");
+                        JButton snacksButton = new JButton("🍿 Snacks");
+                        JPanel categoryPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                        categoryPanel.add(beveragesButton);
+                        categoryPanel.add(snacksButton);
+
+                        // === Items panel (center) ===
+                        JPanel itemsPanel = new JPanel();
+                        itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.Y_AXIS));
+                        JScrollPane itemsScrollPane = new JScrollPane(itemsPanel);
+
+                        // === Πραγματικά ελληνικά ροφήματα και σνακ ===
+                        String[][] beverages = {
+                                {"Φραπέ", "1.50€"},
+                                {"Φρέντο Εσπρέσο", "2.00€"},
+                                {"Φρέντο Καπουτσίνο", "2.30€"},
+                                {"Καφές ελληνικός", "1.20€"},
+                                {"Χυμός πορτοκάλι", "2.50€"},
+                                {"Νερό εμφιαλωμένο", "0.50€"},
+                                {"Ανθρακούχο νερό", "1.20€"},
+                                {"Πράσινο τσάι", "1.80€"},
+                                {"Τσάι με λεμόνι", "1.70€"},
+                                {"Αναψυκτικό τύπου cola", "1.30€"},
+                                {"Λεμονάδα", "1.50€"},
+                                {"Πορτοκαλάδα", "1.50€"},
+                                {"Βυσσινάδα", "1.60€"},
+                                {"Ροδάκινο νέκταρ", "2.00€"},
+                                {"Κακάο ζεστό", "1.80€"}
+                        };
+
+                        String[][] snacks = {
+                                {"Κουλούρι Θεσσαλονίκης", "1.00€"},
+                                {"Τυρόπιτα", "1.80€"},
+                                {"Ζαμπονοτυρόπιτα", "2.00€"},
+                                {"Σπανακόπιτα", "2.00€"},
+                                {"Κρουασάν σοκολάτας", "1.50€"},
+                                {"Μπάρες δημητριακών", "1.30€"},
+                                {"Πατατάκια", "1.20€"},
+                                {"Ποπ κορν", "1.50€"},
+                                {"Κριτσίνια", "1.00€"},
+                                {"Ξηροί καρποί", "1.80€"},
+                                {"Κουραμπιέδες", "2.50€"},
+                                {"Μελομακάρονα", "2.50€"},
+                                {"Μπισκότα", "1.30€"},
+                                {"Σάντουιτς τοστ", "2.20€"},
+                                {"Γιαούρτι με μέλι", "2.70€"}
+                        };
+
+
+                        // Function to load items into the panel
+                        Runnable loadBeverages = () -> {
+                            itemsPanel.removeAll();
+                            for (String[] item : beverages) {
+                                String name = item[0];
+                                String price = item[1];
+                                JButton itemButton = new JButton(name + " - " + price);
+                                itemButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                                itemButton.addActionListener(ev -> {
+                                    // Check if item is already in cart
+                                    boolean found = false;
+                                    for (int i = 0; i < cartModel.size(); i++) {
+                                        String cartItem = cartModel.get(i);
+                                        if (cartItem.startsWith(name + " - " + price)) {
+                                            found = true;
+                                            // Check if it already has a quantity
+                                            if (cartItem.matches(".*x\\d+$")) {
+                                                // Extract current count, increment it
+                                                int countStart = cartItem.lastIndexOf('x') + 1;
+                                                int count = Integer.parseInt(cartItem.substring(countStart));
+                                                count++;
+                                                cartModel.set(i, name + " - " + price + " x" + count);
+                                            } else {
+                                                // Add x2 if no quantity yet
+                                                cartModel.set(i, name + " - " + price + " x2");
+                                            }
+                                            break;
+                                        }
+                                    }
+                                    if (!found) {
+                                        cartModel.addElement(name + " - " + price);
+                                    }
+                                });
+
+                                itemsPanel.add(itemButton);
+                                itemsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+                            }
+                            shopDialog.revalidate();
+                            shopDialog.repaint();
+                        };
+
+                        Runnable loadSnacks = () -> {
+                            itemsPanel.removeAll();
+                            for (String[] item : snacks) {
+                                String name = item[0];
+                                String price = item[1];
+                                JButton itemButton = new JButton(name + " - " + price);
+                                itemButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                                itemButton.addActionListener(ev -> {
+                                    // Check if item is already in cart
+                                    boolean found = false;
+                                    for (int i = 0; i < cartModel.size(); i++) {
+                                        String cartItem = cartModel.get(i);
+                                        if (cartItem.startsWith(name + " - " + price)) {
+                                            found = true;
+                                            // Check if it already has a quantity
+                                            if (cartItem.matches(".*x\\d+$")) {
+                                                // Extract current count, increment it
+                                                int countStart = cartItem.lastIndexOf('x') + 1;
+                                                int count = Integer.parseInt(cartItem.substring(countStart));
+                                                count++;
+                                                cartModel.set(i, name + " - " + price + " x" + count);
+                                            } else {
+                                                // Add x2 if no quantity yet
+                                                cartModel.set(i, name + " - " + price + " x2");
+                                            }
+                                            break;
+                                        }
+                                    }
+                                    if (!found) {
+                                        cartModel.addElement(name + " - " + price);
+                                    }
+                                });
+
+                                itemsPanel.add(itemButton);
+                                itemsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+                            }
+                            shopDialog.revalidate();
+                            shopDialog.repaint();
+                        };
+
+
+                        beveragesButton.addActionListener(e1 -> loadBeverages.run());
+                        snacksButton.addActionListener(e2 -> loadSnacks.run());
+
+
+                        loadBeverages.run();
+
+
+                        // === Layout ===
+                        shopDialog.add(categoryPanel, BorderLayout.NORTH);
+                        shopDialog.add(itemsScrollPane, BorderLayout.CENTER);
+                        shopDialog.add(cartPanel, BorderLayout.SOUTH);
+                        shopDialog.setVisible(true);
+                    }
+
+                });
+
+                contentPanel.add(postPanel);
+                contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            }
+
+
+            JScrollPane sponsorScrollPane = new JScrollPane(contentPanel);
+            sponsorScrollPane.setBorder(null);
+
+            sponsorDialog.add(sponsorScrollPane);
+            sponsorDialog.setVisible(true);
+        });
+
 
 
 

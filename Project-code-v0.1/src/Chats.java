@@ -77,6 +77,10 @@ public class Chats extends JFrame {
             new Events(userId);  // your target window
         });
 
+        requestsButton.addActionListener(e -> {
+            dispose();
+            new Requests(userId);
+        });
 
         setVisible(true);
     }
