@@ -154,6 +154,7 @@ public class ChatScreen extends JFrame {
             String message = messageInputField.getText().trim();
             if (!message.isEmpty()) {
                 db.insertMessage(userId, ChatID, message);
+                Notification.notify(userId, ChatID);
                 messageInputField.setText(""); //CLEAR
                 String senderUsername = db.getUsernameById(userId);  //GET USERNAME
                 String formattedMessage = senderUsername + ": " + message;

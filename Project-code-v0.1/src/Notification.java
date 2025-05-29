@@ -49,7 +49,7 @@ public class Notification {
                     @Override
                     public void mouseClicked(MouseEvent e){
                         SwingUtilities.getWindowAncestor(displayPanel).dispose();
-                        //TODO new PostScreen((new DBManager()).getPost(notification.source_id));
+                        new ChatScreen(notification.source_id, Main.loggeduser);
                     }
                 });
             }
@@ -74,9 +74,10 @@ public class Notification {
         notifManager.distributeNotifications(post);
     }
 
-    //public static void notify(Chat chat){
-    //TODO AFTER CHAT IMPLEMENTATION
-    //}
+    public static void notify(Integer userId, Integer chatId){
+        DBManager notifManager = new DBManager();
+        notifManager.distributeNotifications(userId, chatId);
+    }
 
     public void push(){
 

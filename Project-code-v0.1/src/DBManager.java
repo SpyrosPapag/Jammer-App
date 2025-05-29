@@ -116,6 +116,28 @@ public class DBManager {
         }
     }
 
+    public void distributeNotifications(Integer user_id, Integer chat_id){
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
+            {
+                String query = "INSERT INTO notification(user_id, source_id, source_type) " +
+                               "SELECT user_id, chat_id, 1 " +
+                               "FROM chat INNER JOIN user ON user_id = member1 OR user_id =  member2 " +
+                               "WHERE chat_notifications = TRUE AND user_id != ? AND chat_id = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+                {
+                    preparedStatement.setInt(1, user_id);
+                    preparedStatement.setInt(2, chat_id);
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public ArrayList<Notification> getNotifications(Integer user_id){
         ArrayList<Notification> notificationResults = new ArrayList<>();
         try
