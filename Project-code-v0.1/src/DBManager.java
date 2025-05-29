@@ -42,30 +42,7 @@ public class DBManager {
         return 0; // 0 for invalid
     }
 
-    public Integer insertUser(String username, String password)
-    {
-        try
-        {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD))
-            {
-                String query = "INSERT INTO user(username, password) VALUES(?, ?)";
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
-                {
-                    preparedStatement.setString(1, username);
-                    preparedStatement.setString(2, password);
-                    preparedStatement.executeUpdate();
-                    try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                        if (resultSet.next())
-                            return resultSet.getInt(1);
-                    }
-                }
-            }
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-        return 0; // 0 for invalid
-    }
+    
 
     public void updateNotificationSettings(){
         try
@@ -954,6 +931,89 @@ public class DBManager {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+    // Method to check if a username already exists in the 'user' table
+    public boolean usernameExists(String username) {
+        try {
+            // Load MySQL JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            // Connect to the database
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                // SQL query to find a user by username
+                String query = "SELECT user_id FROM user WHERE username = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                    preparedStatement.setString(1, username);
+                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                        return resultSet.next(); // If a record is found, username exists
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace(); // Log any exceptions (driver not found, SQL error, etc.)
+        }
+        return false; // Default: username does not exist
+    }
+
+
+public boolean updateUserBio(String username, String bio) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection conn = DriverManager.getConnection(Main.JDBC_URL, Main.DB_USER, Main.DB_PASSWORD);
+                 PreparedStatement ps = conn.prepareStatement(
+                         "UPDATE user SET bio = ? WHERE username = ?")) {
+                ps.setString(1, bio);
+                ps.setString(2, username);
+                return ps.executeUpdate() > 0;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+	
+	public Integer insertUser(String mail, String password) {
+       try {
+         Class.forName("com.mysql.cj.jdbc.Driver");
+          try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+            //Check if mail already exists
+           String checkQuery = "SELECT user_id FROM user WHERE mail = ?";
+            try (PreparedStatement checkStmt = connection.prepareStatement(checkQuery)) {
+               checkStmt.setString(1, mail);
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next()) {
+                  //  Mail already exists
+                     return 0;
+                   }
+              }
+          }
+    // Insert query with auto-generated user_id
+            String query = "INSERT INTO user(mail, password) VALUES(?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, mail);
+            preparedStatement.setString(2, password);
+            preparedStatement.executeUpdate();
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                 if (resultSet.next()) {
+                   return resultSet.getInt(1); // Return newly generated user_id
+               }
+            }
+        }
+        }
+       } catch (ClassNotFoundException | SQLException e) {
+          e.printStackTrace(); // Log exceptions
+         }
+         return 0; // Return 0 for failure (e.g., insert failed)
+    }
+	public boolean saveUserPreferences(Integer userId, String preferences) {
+        try (Connection conn = DriverManager.getConnection(Main.JDBC_URL, Main.DB_USER, Main.DB_PASSWORD);
+             PreparedStatement ps = conn.prepareStatement("UPDATE user SET music_preferences = ? WHERE user_id = ?")) {
+            ps.setString(1, preferences);
+            ps.setInt(2, userId);
+            return ps.executeUpdate() > 0; // Returns true if at least one row is updated
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Returns false in case of an error
         }
     }
 }
