@@ -57,7 +57,7 @@ public class Login extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                new SignUp();
+                new UserInfoComplScreen();
             }
         });
     }
