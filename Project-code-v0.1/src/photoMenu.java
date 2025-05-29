@@ -11,7 +11,7 @@ public class photoMenu extends JFrame {
     private JList<String> photoList;
     private JButton confirmButton;
     private JScrollPane scrollPane;
-    private JLabel photoPreview; // Add this to display the preview
+    private JLabel photoPreview; 
 
     private String selectedPhoto;
     public static int user;

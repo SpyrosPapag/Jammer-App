@@ -11,7 +11,7 @@ public class PostList {
 
     public PostList() {
         backButton.addActionListener(e -> {
-            new EditCritiquesScreen(null); // Pass user ID if needed
+            new EditCritiquesScreen(null);
             JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(backButton);
             if (topFrame != null) topFrame.dispose();
         });

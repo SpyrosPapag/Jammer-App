@@ -27,14 +27,14 @@ public class EditCritiquesScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new UsersPostList();
-                dispose(); // Close current window
+                dispose(); 
             }
         });
         addCritiqueButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new PostList();
-                dispose(); // Close current window
+                dispose(); 
             }
         });
         backButton.addActionListener(new ActionListener() {
@@ -48,7 +48,7 @@ public class EditCritiquesScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new PostList();
-                dispose(); // Close current window
+                dispose(); 
             }
         });
     }
