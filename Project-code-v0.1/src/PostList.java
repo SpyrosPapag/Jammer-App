@@ -11,7 +11,7 @@ public class PostList {
 
     public PostList() {
         backButton.addActionListener(e -> {
-            new EditCritiquesScreen(null); // Pass user ID if needed
+            new EditCritiquesScreen(null); 
             JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(backButton);
             if (topFrame != null) topFrame.dispose();
         });
@@ -19,7 +19,7 @@ public class PostList {
 
     public void displayOtherUsersPosts(int currentUserId) {
         DBManager dbManager = new DBManager();
-        ArrayList<Post> allPosts = dbManager.getAllPosts(); // You may need to implement this method to get all posts
+        ArrayList<Post> allPosts = dbManager.getAllPosts(); 
         StringBuilder sb = new StringBuilder();
         for (Post post : allPosts) {
             if (post.getPoster_id() != currentUserId) {
