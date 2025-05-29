@@ -1016,4 +1016,58 @@ public boolean updateUserBio(String username, String bio) {
             return false; // Returns false in case of an error
         }
     }
+        public ArrayList<Review> getReviewsForPost(int postId) {
+        ArrayList<Review> reviews = new ArrayList<>();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                String query = "SELECT review_id, rated_id, content, rating FROM review WHERE rated_id = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                    preparedStatement.setInt(1, postId);
+                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                        while (resultSet.next()) {
+                            int reviewId = resultSet.getInt("review_id");
+                            int ratedId = resultSet.getInt("rated_id");
+                            String content = resultSet.getString("content");
+                            int rating = resultSet.getInt("rating");
+                            reviews.add(new Review(reviewId, ratedId, content, rating));
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return reviews;
+    }
+
+    public ArrayList<Post> getAllPosts() {
+        ArrayList<Post> postResults = new ArrayList<>();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                String query = "SELECT * FROM post";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                        Integer post_id, poster_id, popularity;
+                        String description, pictures_url_json, type, location, date;
+                        while (resultSet.next()) {
+                            post_id = resultSet.getInt(1);
+                            poster_id = resultSet.getInt(2);
+                            pictures_url_json = resultSet.getString(3);
+                            description = resultSet.getString(4);
+                            type = resultSet.getString(5);
+                            date = resultSet.getString(6);
+                            location = resultSet.getString(7);
+                            popularity = resultSet.getInt(8);
+                            postResults.add(new Post(post_id, poster_id, description, pictures_url_json, type, date, location, popularity));
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+
+        }
+    }
 }
