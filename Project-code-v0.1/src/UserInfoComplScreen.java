@@ -49,7 +49,7 @@ public class UserInfoComplScreen extends JFrame {
                     confirmPF.setText("");
                     JOptionPane.showMessageDialog(null, "SignUp Successful!");
                     dispose();
-                    new ProfileInfoCompletion(user); // Show next interface
+                    new ProfileInfoCompletion(user); 
                 } else {
                     mailTF.setText("");
                     passwordPF.setText("");
