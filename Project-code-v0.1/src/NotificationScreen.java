@@ -27,7 +27,7 @@ public class NotificationScreen extends JFrame {
         setResizable(false);
         setLocationRelativeTo(null);
 
-        // fetch and display users suggested events feed
+
         viewNotifications(notificationsPanel, user);
 
         settingsScreen = null;
@@ -96,7 +96,7 @@ public class NotificationScreen extends JFrame {
         notificationsToDisplay = new DBManager().getNotifications(user);
         if(notificationsToDisplay.isEmpty()) return;
 
-        // display the returned posts
+        // display the returned notifications
         Notification.displayNotifications(notificationsToDisplay, notificationsPanel);
     }
 }

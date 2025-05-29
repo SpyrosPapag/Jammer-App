@@ -31,7 +31,7 @@ public class EditVenueListing extends JFrame {
         this.postId = postId;
         this.currentPhotos = new ArrayList<>();
 
-        // Setup frame
+
         setTitle("Edit Venue Listing");
         setContentPane(Wrapper);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -39,17 +39,17 @@ public class EditVenueListing extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Initialize image label
+
         imageLabel = new JLabel();
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
         postPic.setLayout(new BorderLayout());
         postPic.add(imageLabel, BorderLayout.CENTER);
 
-        // Load current caption and picture
+
         loadCaption();
         loadPicture();
 
-        // Add action listeners
+
         confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -71,7 +71,7 @@ public class EditVenueListing extends JFrame {
             }
         });
 
-        // Add action listeners
+
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -88,11 +88,11 @@ public class EditVenueListing extends JFrame {
 
         if (picturesJson != null && !picturesJson.isEmpty()) {
             currentPhotos = new ArrayList<>(Arrays.asList(picturesJson.split(",")));
-            // Get the first picture from the list
+
             String firstPicture = currentPhotos.get(0).trim();
 
             try {
-                // Construct path to the specific post folder
+
                 String postsPath = "Project-code-v0.1/src/Media/Posts/" + postId;
                 File postFolder = new File(postsPath);
 
@@ -122,18 +122,18 @@ public class EditVenueListing extends JFrame {
     private void displayImage(File imageFile) throws IOException {
         BufferedImage originalImage = ImageIO.read(imageFile);
 
-        // Get the panel's size
+
         int panelWidth = postPic.getWidth();
         int panelHeight = postPic.getHeight();
 
-        // If panel size is 0 (not yet rendered), use default sizes
-        if (panelWidth == 0) panelWidth = 360;  // default width
-        if (panelHeight == 0) panelHeight = 360; // default height
 
-        // Create scaled image that fits in the panel while maintaining aspect ratio
+        if (panelWidth == 0) panelWidth = 360;
+        if (panelHeight == 0) panelHeight = 360;
+
+
         Image scaledImage = getScaledImage(originalImage, panelWidth, panelHeight);
 
-        // Update the label with the scaled image
+
         imageLabel.setIcon(new ImageIcon(scaledImage));
     }
 
@@ -145,18 +145,18 @@ public class EditVenueListing extends JFrame {
         if (result == JFileChooser.APPROVE_OPTION) {
             File[] selectedFiles = fileChooser.getSelectedFiles();
 
-            // Create directory if it doesn't exist
+
             String dirPath = "Project-code-v0.1/src/Media/Posts/" + postId;
             new File(dirPath).mkdirs();
 
             for (File file : selectedFiles) {
                 String fileName = file.getName();
                 try {
-                    // Copy file to post directory
+
                     Files.copy(file.toPath(), new File(dirPath + "/" + fileName).toPath(),
                             StandardCopyOption.REPLACE_EXISTING);
 
-                    // Add to currentPhotos if not already present
+
                     if (!currentPhotos.contains(fileName)) {
                         currentPhotos.add(fileName);
                     }
@@ -169,9 +169,9 @@ public class EditVenueListing extends JFrame {
                 }
             }
 
-            // Update database with new photo list
+
             updatePhotosInDatabase();
-            // Refresh display
+
             loadPicture();
         }
     }
@@ -195,10 +195,10 @@ public class EditVenueListing extends JFrame {
                 options[0]);
 
         if (selected != null) {
-            // Remove from list
+
             currentPhotos.remove(selected);
 
-            // Delete file
+
             try {
                 Files.deleteIfExists(new File("Project-code-v0.1/src/Media/Posts/" + postId + "/" + selected).toPath());
             } catch (IOException e) {
@@ -209,9 +209,9 @@ public class EditVenueListing extends JFrame {
                         JOptionPane.ERROR_MESSAGE);
             }
 
-            // Update database
+
             updatePhotosInDatabase();
-            // Refresh display
+
             loadPicture();
         }
     }
@@ -236,14 +236,14 @@ public class EditVenueListing extends JFrame {
         System.out.println("Searching for image: " + imageName);
         System.out.println("Starting search in directory: " + directory.getAbsolutePath());
 
-        // First try direct match in the folder
+
         File directFile = new File(directory, imageName);
         if (directFile.exists() && directFile.isFile()) {
             System.out.println("Found image directly: " + directFile.getAbsolutePath());
             return directFile;
         }
 
-        // If not found directly, search in subdirectories
+
         try {
             try (Stream<Path> paths = Files.walk(directory.toPath())) {
                 return paths
@@ -272,7 +272,7 @@ public class EditVenueListing extends JFrame {
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Calculate dimensions that maintain aspect ratio
+
         double srcWidth = srcImg.getWidth(null);
         double srcHeight = srcImg.getHeight(null);
 
@@ -284,15 +284,15 @@ public class EditVenueListing extends JFrame {
         int scaledWidth = (int)(srcWidth * scaleFactor);
         int scaledHeight = (int)(srcHeight * scaleFactor);
 
-        // Center the image
+
         int x = (targetWidth - scaledWidth) / 2;
         int y = (targetHeight - scaledHeight) / 2;
 
-        // Draw black background
+
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, targetWidth, targetHeight);
 
-        // Draw the scaled image
+
         g2d.drawImage(srcImg, x, y, scaledWidth, scaledHeight, null);
         g2d.dispose();
 

@@ -28,7 +28,7 @@ public class Chats extends JFrame {
         chatList = new JList<>(listModel);
 
         chatList.setCellRenderer(new DefaultListCellRenderer() {
-            private final Font biggerFont = new Font("Arial", Font.PLAIN, 18); // bigger font size
+            private final Font biggerFont = new Font("Arial", Font.PLAIN, 18);
 
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index,
@@ -36,7 +36,7 @@ public class Chats extends JFrame {
                 JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
                 label.setFont(biggerFont);
-                label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // padding to increase row height
+                label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
                 return label;
             }
@@ -55,7 +55,7 @@ public class Chats extends JFrame {
                     if (index >= 0) {
                         int chatId = chatIdMap.get(index);
                         System.out.println("Selected Chat ID: " + chatId);
-                        //ANOIGW TO SYGKEKRIMENO CHAT
+
                         new ChatScreen(chatId, userId);
                         dispose();
                     }
@@ -74,7 +74,7 @@ public class Chats extends JFrame {
 
         back.addActionListener(e -> {
             dispose();
-            new Events(userId);  // your target window
+            new Events(userId);
         });
 
         requestsButton.addActionListener(e -> {

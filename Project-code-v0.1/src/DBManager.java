@@ -27,19 +27,19 @@ public class DBManager {
                     preparedStatement.setString(2, password);
                     try (ResultSet resultSet = preparedStatement.executeQuery())
                     {
-                        if(resultSet.next()) // Returns true if the result set is not empty (valid credentials)
+                        if(resultSet.next())
                             Main.pushNotif = resultSet.getBoolean(2);
                             Main.listingNotif = resultSet.getBoolean(3);
                             Main.eventNotif = resultSet.getBoolean(4);
                             Main.chatNotif = resultSet.getBoolean(5);
-                            return resultSet.getInt(1); // return user_id
+                            return resultSet.getInt(1);
                     }
                 }
             }
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
-        return 0; // 0 for invalid
+        return 0;
     }
 
     
@@ -449,7 +449,7 @@ public class DBManager {
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
-        return -1; // not found
+        return -1;
     }
 
     public void insertMessage(int senderId, int chatId, String content) {
@@ -535,13 +535,13 @@ public class DBManager {
                 try (PreparedStatement updateStmt = conn.prepareStatement(updateRequestStatus);
                      PreparedStatement insertStmt = conn.prepareStatement(insertChat)) {
 
-                    // Update request status
+
                     updateStmt.setInt(1, senderId);
                     updateStmt.setInt(2, recipientId);
                     int updatedRows = updateStmt.executeUpdate();
 
                     if (updatedRows > 0) {
-                        // Insert into chat only if request was updated
+
                         insertStmt.setInt(1, senderId);
                         insertStmt.setInt(2, recipientId);
                         insertStmt.executeUpdate();
@@ -763,7 +763,7 @@ public class DBManager {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
-                // Changed column name from preferences_json to preferences
+
                 String query = "SELECT preferences_json FROM user WHERE user_id = ?";
                 try (PreparedStatement stmt = connection.prepareStatement(query)) {
                     stmt.setInt(1, userId);
@@ -801,7 +801,7 @@ public class DBManager {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
-                // Changed column name from preferences_json to preferences
+
                 String query = "UPDATE user SET preferences_json = ? WHERE user_id = ?";
                 try (PreparedStatement stmt = connection.prepareStatement(query)) {
                     stmt.setString(1, preferences);
@@ -850,7 +850,7 @@ public class DBManager {
             return false;
         }
     }
-    // Add this method to DBManager class
+
     public String getPostType(Integer postId) {
         String query = "SELECT type FROM post WHERE post_id = ?";
 
@@ -869,7 +869,7 @@ public class DBManager {
             return null;
         }
     }
-    // Add these methods to DBManager class
+
     public String getPostCaption(int postId) {
         String query = "SELECT description FROM post WHERE post_id = ?";
         try (Connection conn = DriverManager.getConnection(Main.JDBC_URL, Main.DB_USER, Main.DB_PASSWORD);
@@ -933,26 +933,26 @@ public class DBManager {
             return false;
         }
     }
-    // Method to check if a username already exists in the 'user' table
+
     public boolean usernameExists(String username) {
         try {
-            // Load MySQL JDBC driver
+
             Class.forName("com.mysql.cj.jdbc.Driver");
-            // Connect to the database
+
             try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
-                // SQL query to find a user by username
+
                 String query = "SELECT user_id FROM user WHERE username = ?";
                 try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                     preparedStatement.setString(1, username);
                     try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                        return resultSet.next(); // If a record is found, username exists
+                        return resultSet.next();
                     }
                 }
             }
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace(); // Log any exceptions (driver not found, SQL error, etc.)
+            e.printStackTrace();
         }
-        return false; // Default: username does not exist
+        return false;
     }
 
 
@@ -976,18 +976,18 @@ public boolean updateUserBio(String username, String bio) {
        try {
          Class.forName("com.mysql.cj.jdbc.Driver");
           try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
-            //Check if mail already exists
+
            String checkQuery = "SELECT user_id FROM user WHERE mail = ?";
             try (PreparedStatement checkStmt = connection.prepareStatement(checkQuery)) {
                checkStmt.setString(1, mail);
                 try (ResultSet rs = checkStmt.executeQuery()) {
                     if (rs.next()) {
-                  //  Mail already exists
+
                      return 0;
                    }
               }
           }
-    // Insert query with auto-generated user_id
+
             String query = "INSERT INTO user(mail, password) VALUES(?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, mail);
@@ -995,51 +995,16 @@ public boolean updateUserBio(String username, String bio) {
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                  if (resultSet.next()) {
-                   return resultSet.getInt(1); // Return newly generated user_id
+                   return resultSet.getInt(1);
                }
             }
         }
         }
        } catch (ClassNotFoundException | SQLException e) {
-          e.printStackTrace(); // Log exceptions
+          e.printStackTrace();
          }
-         return 0; // Return 0 for failure (e.g., insert failed)
+         return 0;
     }
-	/*public boolean saveUserPreferences(Integer userId, String preferences) {
-        try (Connection conn = DriverManager.getConnection(Main.JDBC_URL, Main.DB_USER, Main.DB_PASSWORD);
-             PreparedStatement ps = conn.prepareStatement("UPDATE user SET music_preferences = ? WHERE user_id = ?")) {
-            ps.setString(1, preferences);
-            ps.setInt(2, userId);
-            return ps.executeUpdate() > 0; // Returns true if at least one row is updated
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false; // Returns false in case of an error
-        }
-    }
-        public ArrayList<Review> getReviewsForPost(int postId) {
-        ArrayList<Review> reviews = new ArrayList<>();
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
-                String query = "SELECT review_id, rated_id, content, rating FROM review WHERE rated_id = ?";
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                    preparedStatement.setInt(1, postId);
-                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                        while (resultSet.next()) {
-                            int reviewId = resultSet.getInt("review_id");
-                            int ratedId = resultSet.getInt("rated_id");
-                            String content = resultSet.getString("content");
-                            int rating = resultSet.getInt("rating");
-                            reviews.add(new Review(reviewId, ratedId, content, rating));
-                        }
-                    }
-                }
-            }
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-        return reviews;
-    }*/
 
     public ArrayList<Post> getAllPosts() {
         ArrayList<Post> postResults = new ArrayList<>();

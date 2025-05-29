@@ -24,7 +24,7 @@ public class EditLessonListing extends JFrame {
     public EditLessonListing(int postId) {
         this.postId = postId;
 
-        // Setup frame
+
         setTitle("Edit Lesson Listing");
         setContentPane(Wrapper);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -32,17 +32,17 @@ public class EditLessonListing extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Initialize image label
+
         imageLabel = new JLabel();
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
         postPic.setLayout(new BorderLayout());
         postPic.add(imageLabel, BorderLayout.CENTER);
 
-        // Load current caption and picture
+
         loadCaption();
         loadPicture();
 
-        // Add action listeners
+
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -65,11 +65,11 @@ public class EditLessonListing extends JFrame {
         String picturesJson = dbManager.getPostPictures(postId);
 
         if (picturesJson != null && !picturesJson.isEmpty()) {
-            // Get the first picture from the comma-separated list
+
             String firstPicture = picturesJson.split(",")[0].trim();
 
             try {
-                // Construct path to the specific post folder
+
                 String postsPath = "Project-code-v0.1/src/Media/Posts/" + postId;
                 File postFolder = new File(postsPath);
 
@@ -84,18 +84,18 @@ public class EditLessonListing extends JFrame {
                 if (imageFile != null && imageFile.exists()) {
                     BufferedImage originalImage = ImageIO.read(imageFile);
 
-                    // Get the panel's size
+
                     int panelWidth = postPic.getWidth();
                     int panelHeight = postPic.getHeight();
 
-                    // If panel size is 0 (not yet rendered), use default sizes
-                    if (panelWidth == 0) panelWidth = 360;  // default width
-                    if (panelHeight == 0) panelHeight = 360; // default height
 
-                    // Create scaled image that fits in the panel while maintaining aspect ratio
+                    if (panelWidth == 0) panelWidth = 360;
+                    if (panelHeight == 0) panelHeight = 360;
+
+
                     Image scaledImage = getScaledImage(originalImage, panelWidth, panelHeight);
 
-                    // Update the label with the scaled image
+
                     imageLabel.setIcon(new ImageIcon(scaledImage));
                 } else {
                     imageLabel.setText("Image not found: " + firstPicture);
@@ -119,14 +119,14 @@ public class EditLessonListing extends JFrame {
         System.out.println("Searching for image: " + imageName);
         System.out.println("Starting search in directory: " + directory.getAbsolutePath());
 
-        // First try direct match in the folder
+
         File directFile = new File(directory, imageName);
         if (directFile.exists() && directFile.isFile()) {
             System.out.println("Found image directly: " + directFile.getAbsolutePath());
             return directFile;
         }
 
-        // If not found directly, search in subdirectories
+
         try {
             try (Stream<Path> paths = Files.walk(directory.toPath())) {
                 return paths
@@ -154,7 +154,7 @@ public class EditLessonListing extends JFrame {
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Calculate dimensions that maintain aspect ratio
+
         double srcWidth = srcImg.getWidth(null);
         double srcHeight = srcImg.getHeight(null);
 
@@ -166,15 +166,15 @@ public class EditLessonListing extends JFrame {
         int scaledWidth = (int)(srcWidth * scaleFactor);
         int scaledHeight = (int)(srcHeight * scaleFactor);
 
-        // Center the image
+
         int x = (targetWidth - scaledWidth) / 2;
         int y = (targetHeight - scaledHeight) / 2;
 
-        // Draw black background
+
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, targetWidth, targetHeight);
 
-        // Draw the scaled image
+
         g2d.drawImage(srcImg, x, y, scaledWidth, scaledHeight, null);
         g2d.dispose();
 

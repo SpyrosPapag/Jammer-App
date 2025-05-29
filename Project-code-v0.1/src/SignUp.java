@@ -44,8 +44,8 @@ public class SignUp extends JFrame{
                 passwordPF.setText("");
                 confirmPF.setText("");
                 JOptionPane.showMessageDialog(null, "SignUp Successful!");
-//                    dispose();
-//                    new PreferencesPage();
+
+
             }
             else
             {

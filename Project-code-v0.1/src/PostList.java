@@ -19,7 +19,7 @@ public class PostList {
 
     public void displayOtherUsersPosts(int currentUserId) {
         DBManager dbManager = new DBManager();
-        ArrayList<Post> allPosts = dbManager.getAllPosts(); // You may need to implement this method to get all posts
+        ArrayList<Post> allPosts = dbManager.getAllPosts();
         StringBuilder sb = new StringBuilder();
         for (Post post : allPosts) {
             if (post.getPoster_id() != currentUserId) {

@@ -40,9 +40,8 @@ public class ChatScreen extends JFrame {
         messageListModel = new DefaultListModel<>();
         messageList = new JList<>(messageListModel);
 
-        //GRAMATOSEIRA
+
         messageList.setFont(new Font("Arial", Font.PLAIN, 20));
-        //messageList.setFixedCellHeight(30);
 
         messageList.setCellRenderer(new DefaultListCellRenderer() {
             @Override
@@ -51,10 +50,8 @@ public class ChatScreen extends JFrame {
                 Component comp;
 
                 if (value instanceof JLabel) {
-                    // Image message — return as is
                     comp = (JLabel) value;
                 } else if (value instanceof String) {
-                    // Text message — use JTextArea for wrapping
                     JTextArea textArea = new JTextArea((String) value);
                     textArea.setWrapStyleWord(true);
                     textArea.setLineWrap(true);
@@ -62,9 +59,8 @@ public class ChatScreen extends JFrame {
                     textArea.setEditable(false);
                     textArea.setFocusable(false);
                     textArea.setFont(new Font("Arial", Font.PLAIN, 20));
-                    textArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); // Optional padding
+                    textArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-                    // Set background/foreground colors for selection
                     if (isSelected) {
                         textArea.setBackground(list.getSelectionBackground());
                         textArea.setForeground(list.getSelectionForeground());
@@ -78,12 +74,10 @@ public class ChatScreen extends JFrame {
                     comp = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 }
 
-                // Wrap in a panel to enforce minimum height
                 JPanel wrapper = new JPanel(new BorderLayout());
-                wrapper.setOpaque(false); // Let inner component control bg
+                wrapper.setOpaque(false);
                 wrapper.add(comp, BorderLayout.CENTER);
 
-                // Calculate preferred height (minimum 30)
                 Dimension preferred = comp.getPreferredSize();
                 preferred.height = Math.max(30, preferred.height);
                 wrapper.setPreferredSize(preferred);
@@ -94,20 +88,20 @@ public class ChatScreen extends JFrame {
 
 
 
-        //ARISTERI
+
         JPanel leftButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
         leftButtons.add(addFilesButton);
         leftButtons.add(voiceButton);
         bottomPanel.add(leftButtons, BorderLayout.WEST);
 
-        // KENTRO
+
         messageInputField = new JTextField();
         bottomPanel.add(messageInputField, BorderLayout.CENTER);
 
 
 
 
-        //DEKSIA
+
         sendButton = new JButton("\u27A4");
         JPanel rightButton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         rightButton.add(sendButton);
@@ -120,7 +114,7 @@ public class ChatScreen extends JFrame {
         topPanel.add(rightButtonsPanel, BorderLayout.EAST);
 
 
-        //JLIST EDW
+
         JScrollPane scrollPane = new JScrollPane(messageList);
         add(scrollPane, BorderLayout.CENTER);
 
@@ -128,7 +122,7 @@ public class ChatScreen extends JFrame {
         int otherUserId = db.getOtherUserId(ChatID, userId);
         String targetUsername = db.getUsernameById(otherUserId);
 
-        // MEGALITERO FONT
+
         JLabel usernameLabel = new JLabel(targetUsername, SwingConstants.CENTER);
         usernameLabel.setFont(new Font("Arial", Font.BOLD, 18));
         topPanel.add(usernameLabel, BorderLayout.CENTER);
@@ -147,7 +141,7 @@ public class ChatScreen extends JFrame {
 
         backButton.addActionListener(e -> {
             dispose();
-            new Chats(userId);  // your target window
+            new Chats(userId);
         });
 
         sendButton.addActionListener(e -> {
@@ -155,8 +149,8 @@ public class ChatScreen extends JFrame {
             if (!message.isEmpty()) {
                 db.insertMessage(userId, ChatID, message);
                 Notification.notify(userId, ChatID);
-                messageInputField.setText(""); //CLEAR
-                String senderUsername = db.getUsernameById(userId);  //GET USERNAME
+                messageInputField.setText("");
+                String senderUsername = db.getUsernameById(userId);
                 String formattedMessage = senderUsername + ": " + message;
                 messageListModel.addElement(formattedMessage);
             }
@@ -165,7 +159,6 @@ public class ChatScreen extends JFrame {
         addFilesButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
 
-            // Only allow image files
             fileChooser.setAcceptAllFileFilterUsed(false);
             fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Image files", "jpg", "jpeg", "png", "gif"));
 
@@ -177,24 +170,21 @@ public class ChatScreen extends JFrame {
         });
 
         searchButton.addActionListener(e -> {
-            // Create a dialog
+
             JDialog searchDialog = new JDialog(this, "Search Messages", true);
             searchDialog.setSize(300, 100);
             searchDialog.setLocationRelativeTo(this);
             searchDialog.setLayout(new BorderLayout());
 
-            // Components
             JTextField searchField = new JTextField();
-            JButton confirmSearchButton = new JButton("\uD83D\uDD0D"); // 🔍
+            JButton confirmSearchButton = new JButton("\uD83D\uDD0D");
 
-            // Panel to hold field + button
             JPanel searchPanel = new JPanel(new BorderLayout());
             searchPanel.add(searchField, BorderLayout.CENTER);
             searchPanel.add(confirmSearchButton, BorderLayout.EAST);
 
             searchDialog.add(searchPanel, BorderLayout.CENTER);
 
-            // Action for confirmSearchButton
             confirmSearchButton.addActionListener(ev -> {
                 String keyword = searchField.getText().trim().toLowerCase();
                 if (!keyword.isEmpty()) {
@@ -202,15 +192,15 @@ public class ChatScreen extends JFrame {
                     for (int i = 0; i < messageListModel.size(); i++) {
                         Object item = messageListModel.get(i);
                         if (item instanceof String && ((String) item).toLowerCase().contains(keyword)) {
-                            messageList.setSelectedIndex(i); // highlight the match
-                            messageList.ensureIndexIsVisible(i); // scroll to it
+                            messageList.setSelectedIndex(i);
+                            messageList.ensureIndexIsVisible(i);
                             found = true;
                             break;
                         }
                     }
 
                     if (found) {
-                        searchDialog.dispose(); // close popup only if match is found
+                        searchDialog.dispose();
                     }
                 }
             });
@@ -243,7 +233,6 @@ public class ChatScreen extends JFrame {
                 postPanel.add(postLabel, BorderLayout.CENTER);
                 postPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
 
-                // 🔥 Make panel clickable
                 postPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 postPanel.addMouseListener(new java.awt.event.MouseAdapter() {
                     @Override
@@ -253,7 +242,6 @@ public class ChatScreen extends JFrame {
                         shopDialog.setLocationRelativeTo(sponsorDialog);
                         shopDialog.setLayout(new BorderLayout());
 
-                        // === Cart panel (bottom) ===
                         DefaultListModel<String> cartModel = new DefaultListModel<>();
                         JList<String> cartList = new JList<>(cartModel);
                         JScrollPane cartScrollPane = new JScrollPane(cartList);
@@ -282,26 +270,25 @@ public class ChatScreen extends JFrame {
                             if (cartModel.isEmpty()) {
                                 JOptionPane.showMessageDialog(shopDialog, "Your cart is empty!", "Payment", JOptionPane.WARNING_MESSAGE);
                             } else {
-                                // For now, just show a confirmation message
                                 JOptionPane.showMessageDialog(shopDialog, "Thank you for your purchase!", "Payment", JOptionPane.INFORMATION_MESSAGE);
-                                cartModel.clear(); // Clear cart after "payment"
+                                cartModel.clear();
                             }
                         });
 
 
-                        // === Category buttons (top) ===
+
                         JButton beveragesButton = new JButton("🥤 Beverages");
                         JButton snacksButton = new JButton("🍿 Snacks");
                         JPanel categoryPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
                         categoryPanel.add(beveragesButton);
                         categoryPanel.add(snacksButton);
 
-                        // === Items panel (center) ===
+
                         JPanel itemsPanel = new JPanel();
                         itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.Y_AXIS));
                         JScrollPane itemsScrollPane = new JScrollPane(itemsPanel);
 
-                        // === Πραγματικά ελληνικά ροφήματα και σνακ ===
+
                         String[][] beverages = {
                                 {"Φραπέ", "1.50€"},
                                 {"Φρέντο Εσπρέσο", "2.00€"},
@@ -339,7 +326,7 @@ public class ChatScreen extends JFrame {
                         };
 
 
-                        // Function to load items into the panel
+
                         Runnable loadBeverages = () -> {
                             itemsPanel.removeAll();
                             for (String[] item : beverages) {
@@ -348,21 +335,17 @@ public class ChatScreen extends JFrame {
                                 JButton itemButton = new JButton(name + " - " + price);
                                 itemButton.setAlignmentX(Component.CENTER_ALIGNMENT);
                                 itemButton.addActionListener(ev -> {
-                                    // Check if item is already in cart
                                     boolean found = false;
                                     for (int i = 0; i < cartModel.size(); i++) {
                                         String cartItem = cartModel.get(i);
                                         if (cartItem.startsWith(name + " - " + price)) {
                                             found = true;
-                                            // Check if it already has a quantity
                                             if (cartItem.matches(".*x\\d+$")) {
-                                                // Extract current count, increment it
                                                 int countStart = cartItem.lastIndexOf('x') + 1;
                                                 int count = Integer.parseInt(cartItem.substring(countStart));
                                                 count++;
                                                 cartModel.set(i, name + " - " + price + " x" + count);
                                             } else {
-                                                // Add x2 if no quantity yet
                                                 cartModel.set(i, name + " - " + price + " x2");
                                             }
                                             break;
@@ -388,21 +371,18 @@ public class ChatScreen extends JFrame {
                                 JButton itemButton = new JButton(name + " - " + price);
                                 itemButton.setAlignmentX(Component.CENTER_ALIGNMENT);
                                 itemButton.addActionListener(ev -> {
-                                    // Check if item is already in cart
                                     boolean found = false;
                                     for (int i = 0; i < cartModel.size(); i++) {
                                         String cartItem = cartModel.get(i);
                                         if (cartItem.startsWith(name + " - " + price)) {
                                             found = true;
-                                            // Check if it already has a quantity
                                             if (cartItem.matches(".*x\\d+$")) {
-                                                // Extract current count, increment it
                                                 int countStart = cartItem.lastIndexOf('x') + 1;
                                                 int count = Integer.parseInt(cartItem.substring(countStart));
                                                 count++;
                                                 cartModel.set(i, name + " - " + price + " x" + count);
                                             } else {
-                                                // Add x2 if no quantity yet
+
                                                 cartModel.set(i, name + " - " + price + " x2");
                                             }
                                             break;
@@ -428,7 +408,7 @@ public class ChatScreen extends JFrame {
                         loadBeverages.run();
 
 
-                        // === Layout ===
+
                         shopDialog.add(categoryPanel, BorderLayout.NORTH);
                         shopDialog.add(itemsScrollPane, BorderLayout.CENTER);
                         shopDialog.add(cartPanel, BorderLayout.SOUTH);
@@ -462,17 +442,17 @@ public class ChatScreen extends JFrame {
     }
 
     private void displayImageMessage(File imageFile) {
-        // Step 1: Load the image from the file path
+
         ImageIcon originalIcon = new ImageIcon(imageFile.getAbsolutePath());
 
-        // Step 2: Resize the image to fit better in the chat (e.g., 200x200 px)
+
         Image scaledImage = originalIcon.getImage().getScaledInstance(350, 500, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
 
-        // Step 3: Create a JLabel to hold the scaled image
+
         JLabel imageLabel = new JLabel(scaledIcon);
 
-        // Step 4: Add the label to the list model
+
         messageListModel.addElement(imageLabel);
     }
 

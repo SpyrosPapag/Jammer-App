@@ -16,13 +16,13 @@ public class Notification {
     }
 
     public static void displayNotifications(ArrayList<Notification> notifications, JScrollPane displayPanel) {
-        // panel for all posts
+
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 
         for (Notification notification : notifications)
         {
-            // panel for one post
+
             JPanel notificationPanel = new JPanel(new BorderLayout(0, 20));
             notificationPanel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
             notificationPanel.setBackground(Color.lightGray);
@@ -31,7 +31,7 @@ public class Notification {
             notificationPanel.setMinimumSize(dims);
             notificationPanel.setMaximumSize(new Dimension(357, 20));
 
-            // text section
+
             JLabel textLabel;
             if(notification.source_type == 0){
                 textLabel = new JLabel("A person you are following has made a new post!");
@@ -61,10 +61,10 @@ public class Notification {
             container.add(Box.createVerticalStrut(5));
         }
 
-        // add container to scroll pane
+
         displayPanel.setViewportView(container);
 
-        // refresh
+
         container.revalidate();
         container.repaint();
     }

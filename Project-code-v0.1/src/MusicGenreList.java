@@ -32,7 +32,7 @@ public class MusicGenreList extends JFrame {
 
         this.currentUserId = userId;
 
-        // Back button action
+
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -40,7 +40,7 @@ public class MusicGenreList extends JFrame {
             }
         });
 
-        // Save button action
+
         savePicks.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -53,7 +53,7 @@ public class MusicGenreList extends JFrame {
 
 
     private void showPreferencesDialog(Integer userId) {
-        // Create a DefaultListModel and populate it with genres
+
         DefaultListModel<String> listModel = new DefaultListModel<>();
         String[] genres = {
                 "Rock", "Pop", "Hip Hop", "Jazz", "Classical",
@@ -65,27 +65,27 @@ public class MusicGenreList extends JFrame {
             listModel.addElement(genre);
         }
 
-        // Create JList with the model
+
         JList<String> genreList = new JList<>(listModel);
         genreList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        genreList.setVisibleRowCount(10); // Show 10 items at a time
+        genreList.setVisibleRowCount(10);
 
-        // Set some visual properties
+
         genreList.setBackground(Color.WHITE);
         genreList.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
 
-        // Create scroll pane with proper size
+
         JScrollPane scrollPane = new JScrollPane(genreList);
         scrollPane.setPreferredSize(new Dimension(200, 300));
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        // Create a panel to hold the components
+
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(new JLabel("Select your music preferences:"), BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        // Show dialog
+
         int result = JOptionPane.showConfirmDialog(
                 this,
                 panel,
@@ -94,7 +94,7 @@ public class MusicGenreList extends JFrame {
                 JOptionPane.PLAIN_MESSAGE
         );
 
-        // Handle result
+
         if (result == JOptionPane.OK_OPTION) {
             savePreferences(genreList.getSelectedValuesList(), userId);
         }

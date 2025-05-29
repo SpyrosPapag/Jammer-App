@@ -44,7 +44,7 @@ public class Requests {
 
         back.addActionListener(e -> {
             frame.dispose();
-            new Chats(userId);  // Navigate back to Chats
+            new Chats(userId);
         });
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -61,7 +61,7 @@ public class Requests {
 
 
         requestList.setCellRenderer(new DefaultListCellRenderer() {
-            private final Font biggerFont = new Font("Arial", Font.PLAIN, 24); // Adjust size here
+            private final Font biggerFont = new Font("Arial", Font.PLAIN, 24);
 
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index,
@@ -69,22 +69,22 @@ public class Requests {
                 JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
                 label.setFont(biggerFont);
-                label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Padding for height
+                label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
                 return label;
             }
         });
 
         requestList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && requestList.getSelectedIndex() != -1) {
-                // A row is selected
+
                 acceptButton.setVisible(true);
                 declineButton.setVisible(true);
 
-                // Optional: enable instead of showing
-                // acceptButton.setEnabled(true);
-                // declineButton.setEnabled(true);
+
+
+
             } else {
-                // No row selected
+
                 acceptButton.setVisible(false);
                 declineButton.setVisible(false);
             }
@@ -96,12 +96,12 @@ public class Requests {
                 String senderUsername = listModel.getElementAt(selectedIndex);
                 DBManager db = new DBManager();
 
-                // You need senderId and recipientId; assuming recipient is current user (userId)
-                // So first get senderId from username
+
+
                 int senderId = db.getUserIdByUsername(senderUsername);
                 if (senderId != -1) {
-                    db.acceptChatRequest(senderId, userId); // Accept request and create chat
-                    refreshRequestList(); // method to reload and refresh the JList
+                    db.acceptChatRequest(senderId, userId);
+                    refreshRequestList();
                 }
             }
         });
@@ -114,8 +114,8 @@ public class Requests {
 
                 int senderId = db.getUserIdByUsername(senderUsername);
                 if (senderId != -1) {
-                    db.declineChatRequest(senderId, userId); // Set status to Declined
-                    refreshRequestList(); // Reload the list
+                    db.declineChatRequest(senderId, userId);
+                    refreshRequestList();
                 }
             }
         });

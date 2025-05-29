@@ -113,6 +113,7 @@ public class Profile extends JFrame{
         if(logedInUser != otherUser) {
             newPostButton.setVisible(false);
             editProfileButton.setVisible(false);
+            editCritiquesButton.setVisible(false);
         } else {
             newPostButton.addActionListener(new ActionListener() {
                 @Override
@@ -168,6 +169,14 @@ public class Profile extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 dispose();
                 new Events(logedInUser);
+            }
+        });
+
+        editCritiquesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new EditCritiquesScreen(logedInUser);
             }
         });
     }

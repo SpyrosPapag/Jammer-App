@@ -41,7 +41,7 @@ public class EditProfile extends JFrame {
         setResizable(false);
         setLocationRelativeTo(null);
 
-        // Load and display user information
+
         loadUserInfo(user);
 
         editPostsButton.addActionListener(new ActionListener() {
@@ -54,12 +54,12 @@ public class EditProfile extends JFrame {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Save changes (the avatar and preferences are already saved when selected)
+
                 dispose();
                 new Profile(currentUser);
             }
         });
-        // Back button action listener
+
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -80,7 +80,7 @@ public class EditProfile extends JFrame {
             }
         });
 
-        // Request verification button action listener
+
         requestVerificationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -106,10 +106,10 @@ public class EditProfile extends JFrame {
     }
 
     private Integer currentUser;
-    // Move these methods outside the constructor but still inside the class
+
 
     private void showPreferencesDialog(Integer userId) {
-        // Create a DefaultListModel and populate it with genres
+
         DefaultListModel<String> listModel = new DefaultListModel<>();
         String[] genres = {
                 "Rock", "Pop", "Hip Hop", "Jazz", "Classical",
@@ -121,29 +121,29 @@ public class EditProfile extends JFrame {
             listModel.addElement(genre);
         }
 
-        // Create JList with the model
+
         JList<String> genreList = new JList<>(listModel);
         genreList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        genreList.setVisibleRowCount(10); // Show 10 items at a time
+        genreList.setVisibleRowCount(10);
 
-        // Set some visual properties
+
         genreList.setBackground(Color.WHITE);
         genreList.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
-        // Load existing preferences
+
         loadExistingPreferences(genreList, userId);
 
-        // Create scroll pane with proper size
+
         JScrollPane scrollPane = new JScrollPane(genreList);
         scrollPane.setPreferredSize(new Dimension(200, 300));
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        // Create a panel to hold the components
+
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(new JLabel("Select your music preferences:"), BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        // Show dialog
+
         int result = JOptionPane.showConfirmDialog(
                 this,
                 panel,
@@ -152,7 +152,7 @@ public class EditProfile extends JFrame {
                 JOptionPane.PLAIN_MESSAGE
         );
 
-        // Handle result
+
         if (result == JOptionPane.OK_OPTION) {
             savePreferences(genreList.getSelectedValuesList(), userId);
         }
@@ -169,26 +169,26 @@ public class EditProfile extends JFrame {
             return;
         }
 
-        // Create a list model and add post IDs
+
         DefaultListModel<String> listModel = new DefaultListModel<>();
         for (Integer postId : userPosts) {
             listModel.addElement("Post ID: " + postId);
         }
 
-        // Create JList with the model
+
         JList<String> postList = new JList<>(listModel);
         postList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        // Create scroll pane
+
         JScrollPane scrollPane = new JScrollPane(postList);
         scrollPane.setPreferredSize(new Dimension(200, 300));
 
-        // Create a panel for the list and buttons
+
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(new JLabel("Select a post to edit:"), BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        // Create button panel for multiple buttons
+
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton editButton = new JButton("Edit Selected Post");
         JButton deleteButton = new JButton("Delete Post");
@@ -196,28 +196,28 @@ public class EditProfile extends JFrame {
         buttonPanel.add(deleteButton);
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Create the dialog
+
         JDialog dialog = new JDialog(this, "Your Posts", true);
         dialog.setContentPane(panel);
         dialog.pack();
         dialog.setLocationRelativeTo(this);
 
-        // Add action listener for edit button
 
-// Add action listener for edit button
+
+
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selected = postList.getSelectedValue();
                 if (selected != null) {
-                    // Extract post ID from the selected string
+
                     int postId = Integer.parseInt(selected.replace("Post ID: ", ""));
 
-                    // Get the post type
+
                     String postType = dbManager.getPostType(postId);
                     if (postType != null) {
                         dialog.dispose();
-                        // Open appropriate editor based on post type
+
                         switch (postType.toLowerCase()) {
                             case "venue":
                                 new EditVenueListing(postId);
@@ -250,7 +250,7 @@ public class EditProfile extends JFrame {
             }
         });
 
-        // Add action listener for delete button
+
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -258,7 +258,7 @@ public class EditProfile extends JFrame {
                 if (selected != null) {
                     int postId = Integer.parseInt(selected.replace("Post ID: ", ""));
 
-                    // Confirm deletion
+
                     int confirm = JOptionPane.showConfirmDialog(dialog,
                             "Are you sure you want to delete this post?",
                             "Confirm Deletion",
@@ -273,7 +273,7 @@ public class EditProfile extends JFrame {
                                     "Success",
                                     JOptionPane.INFORMATION_MESSAGE);
 
-                            // Close dialog if no more posts
+
                             if (listModel.isEmpty()) {
                                 dialog.dispose();
                             }
@@ -381,7 +381,7 @@ public class EditProfile extends JFrame {
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
 
-            // Updated path to include Project-code-v0.1
+
             Path destinationDir = Paths.get("Project-code-v0.1", "src", "Media", "UserAvatars", "1");
 
             System.out.println("Attempting to access: " + destinationDir.toAbsolutePath());
