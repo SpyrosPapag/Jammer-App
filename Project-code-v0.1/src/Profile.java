@@ -16,6 +16,7 @@ public class Profile extends JFrame{
     private JButton profileButton;
     private JButton notifsButton;
     private JButton eventsButton;
+    private JButton editCritiquesButton;
     private JScrollPane postsPanel;
     private JPanel Wrapper;
     private JPanel profileInfoPanel;
@@ -96,8 +97,6 @@ public class Profile extends JFrame{
                 new EditCritiquesScreen(user);
             }
         });
-    }
-
     }
 
     public Profile(Integer logedInUser, Integer otherUser)

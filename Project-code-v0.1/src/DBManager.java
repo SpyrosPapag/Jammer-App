@@ -1005,7 +1005,7 @@ public boolean updateUserBio(String username, String bio) {
          }
          return 0; // Return 0 for failure (e.g., insert failed)
     }
-	public boolean saveUserPreferences(Integer userId, String preferences) {
+	/*public boolean saveUserPreferences(Integer userId, String preferences) {
         try (Connection conn = DriverManager.getConnection(Main.JDBC_URL, Main.DB_USER, Main.DB_PASSWORD);
              PreparedStatement ps = conn.prepareStatement("UPDATE user SET music_preferences = ? WHERE user_id = ?")) {
             ps.setString(1, preferences);
@@ -1039,7 +1039,7 @@ public boolean updateUserBio(String username, String bio) {
             e.printStackTrace();
         }
         return reviews;
-    }
+    }*/
 
     public ArrayList<Post> getAllPosts() {
         ArrayList<Post> postResults = new ArrayList<>();
@@ -1069,5 +1069,35 @@ public boolean updateUserBio(String username, String bio) {
             e.printStackTrace();
 
         }
+        return postResults;
+    }
+
+    public ArrayList<Review> getReviewsForPost(int postId) {
+        ArrayList<Review> reviewResults = new ArrayList<>();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+                String query = "SELECT * FROM review WHERE rated_id = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                    preparedStatement.setInt(1, postId);
+                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                        Integer reviewId, ratedId, rating;
+                        String content;
+                        String description, pictures_url_json, type, location, date;
+                        while (resultSet.next()) {
+                            reviewId = resultSet.getInt(1);
+                            ratedId = resultSet.getInt(2);
+                            content = resultSet.getString(3);
+                            rating = resultSet.getInt(4);
+                            reviewResults.add(new Review(reviewId, ratedId, content, rating));
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+
+        }
+        return reviewResults;
     }
 }
