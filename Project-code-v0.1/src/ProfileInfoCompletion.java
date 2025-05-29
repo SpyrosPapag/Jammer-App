@@ -31,7 +31,7 @@ public class ProfileInfoCompletion {
 
 
     private void initUI() {
-        // Initialize components
+        
         Wrapper = new JPanel();
         username = new JTextField(20);
         AboutMe = new JTextField(30);
@@ -39,15 +39,15 @@ public class ProfileInfoCompletion {
         SetPreferences = new JButton("Set Preferences");
         saveProfileButton = new JButton("Save Profile");
 
-        // CardLayout for switching panels
+        
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
-        // Panel 1: Username only
+       
         JPanel usernamePanel = new JPanel(new GridBagLayout());
         usernamePanel.add(username);
 
-        // Panel 2: Other fields
+        
         JPanel otherPanel = new JPanel();
         otherPanel.setLayout(new BoxLayout(otherPanel, BoxLayout.Y_AXIS));
         otherPanel.add(AboutMe);
@@ -55,19 +55,19 @@ public class ProfileInfoCompletion {
         otherPanel.add(SetPreferences);
         otherPanel.add(saveProfileButton);
 
-        // Add panels to cardPanel
+        
         cardPanel.add(usernamePanel, "USERNAME");
         cardPanel.add(otherPanel, "OTHER");
 
-        // Set up Wrapper
+   
         Wrapper.setLayout(new BorderLayout());
         Wrapper.removeAll();
         Wrapper.add(cardPanel, BorderLayout.CENTER);
 
-        // Show username panel first
+        
         cardLayout.show(cardPanel, "USERNAME");
 
-        // Add listeners
+        
         username.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
