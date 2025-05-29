@@ -42,7 +42,7 @@ public class UsersPostList extends JFrame{
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new EditCritiquesScreen(null); // Pass user ID if needed
+                new EditCritiquesScreen(null); 
                 dispose();
             }
         });
