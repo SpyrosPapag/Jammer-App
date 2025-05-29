@@ -65,14 +65,14 @@ public class Profile extends JFrame{
                 new NotificationScreen(user);
             }
         });
-//
-//        chatButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new ChatScreen();
-//            }
-//        });
+
+        chatButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new Chats(user);
+            }
+        });
 
         profileButton.addActionListener(new ActionListener() {
             @Override
@@ -103,40 +103,50 @@ public class Profile extends JFrame{
         setLocationRelativeTo(null);
         viewProfile(postsPanel, Bio, Avatar, Other, otherUser);
 
-        newPostButton.setVisible(false);
-        editProfileButton.setVisible(false);
-//
-//        editProfileButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new editProfile();
-//            }
-//        });
+        if(logedInUser != otherUser) {
+            newPostButton.setVisible(false);
+            editProfileButton.setVisible(false);
+        } else {
+            newPostButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    dispose();
+                    new newPost(logedInUser);
+                }
+            });
 
-//        listingsButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new Listings();
-//            }
-//        });
-//
-//        notifsButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new NotificationsScreen();
-//            }
-//        });
-//
-//        chatButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new ChatScreen();
-//            }
-//        });
+            editProfileButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    dispose();
+                    new EditProfile(logedInUser);
+                }
+            });
+        }
+
+        listingsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new Listings(logedInUser);
+            }
+        });
+
+        notifsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new NotificationScreen(logedInUser);
+            }
+        });
+
+        chatButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new Chats(logedInUser);
+            }
+        });
 
         profileButton.addActionListener(new ActionListener() {
             @Override

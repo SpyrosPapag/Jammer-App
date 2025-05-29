@@ -64,7 +64,7 @@ public class Events extends JFrame{
                 new NotificationScreen(user);
             }
         });
-//
+
         chatButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

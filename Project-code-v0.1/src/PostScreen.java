@@ -60,13 +60,13 @@ public class PostScreen extends JFrame {
             }
         });
 
-//        chatButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                dispose();
-//                new ChatScreen();
-//            }
-//        });
+        chatButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new Chats(Main.loggeduser);
+            }
+        });
 
         profileButton.addActionListener(new ActionListener() {
                                                  @Override
@@ -119,7 +119,7 @@ public class PostScreen extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e){
                 dispose();
-                new Profile(post.getPoster_id());
+                new Profile(Main.loggeduser, post.getPoster_id());
             }
         });
 
