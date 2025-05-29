@@ -89,6 +89,14 @@ public class Profile extends JFrame{
                 new Events(user);
             }
         });
+        editCritiquesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new EditCritiquesScreen(user);
+            }
+        });
+    }
 
     }
 
